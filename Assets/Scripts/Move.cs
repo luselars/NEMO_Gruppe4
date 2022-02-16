@@ -15,19 +15,28 @@ public class Move : MonoBehaviour
         var z = Random.Range(min, max);
         return new Vector3(x, y, z);
     }
+
+    private void RandomMovement()
+    {
+        var rb = GetComponent<Rigidbody>();
+        Vector3 movementVector = (RandomVector(0f, 5f) + rb.velocity);
+        movementVector = movementVector.normalized;
+        rb.velocity = RandomVector(0f, 5f);
+    }
+
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
         float step = speed * Time.deltaTime; // calculate distance to move
         transform.position = Vector3.MoveTowards(transform.position, target.position, step);
+
+        InvokeRepeating("RandomMovement", 2.0f, 0.3f);
     }
 
     void Update()
     {
 
-        var rb = GetComponent<Rigidbody>();
-        Vector3 movementVector = (RandomVector(0f, 5f) + rb.velocity);
-        rb.velocity = RandomVector(0f, 5f);
+      
     }
 
 }
