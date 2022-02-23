@@ -48,12 +48,13 @@ void Start()
                     float mult = (dist - Detection) / (Detection - PreferredDist);
                     Vector3 Nv = (float)0.5 * Children[i].GetComponent<Fish>().Vref * mult;
                     Children[i].GetComponent<Fish>().Sref = (Children[i].GetComponent<Fish>().Sref + Nv);
+                    Children[i].GetComponent<Fish>().OtherFish++;
                 } else if (dist < PreferredDist && dist > 0) // makes the fish move away if too close
                 {
                     Vector3 distVector = Children[j].transform.position - Children[i].transform.position;
                     float mult = (PreferredDist - dist);
                     distVector = distVector * mult;
-
+                    Children[i].GetComponent<Fish>().OtherFish++;
                     //Children[i].GetComponent<Fish>().Sref = (Children[i].GetComponent<Fish>().Sref + distVector);
                 }
             }

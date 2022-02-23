@@ -283,8 +283,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Children: []
-  PreferredDist: 0
-  Detection: 0
+  PreferredDist: 0.66
+  Detection: 3
 --- !u!4 &338152046 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8987913388197151452, guid: 19ddd45add919fd4ca90d7180ef2f951, type: 3}
@@ -413,7 +413,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7862670442205999344, guid: 19ddd45add919fd4ca90d7180ef2f951, type: 3}
       propertyPath: spawnCount
-      value: 100
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 7862670442205999344, guid: 19ddd45add919fd4ca90d7180ef2f951, type: 3}
       propertyPath: spawnRadius
@@ -815,8 +815,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1399520628}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -20, z: 0}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 412990134}
