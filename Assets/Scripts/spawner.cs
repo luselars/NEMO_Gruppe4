@@ -11,11 +11,15 @@ public class spawner : MonoBehaviour
     public int spawnCount = 10;
 
     void Awake () {
+        GameObject fishes = GameObject.FindGameObjectsWithTag("Fish")[0];
+
         for (int i = 0; i < spawnCount; i++) {
             Vector3 pos = transform.position + Random.insideUnitSphere * spawnRadius;
-            Fish fish = Instantiate (prefab);
+            Fish fish = Instantiate(prefab);
             fish.transform.position = pos;
             fish.transform.forward = Random.insideUnitSphere;
+
+            fishes.GetComponent<SocialBehaviour>().Children.Add(fish.gameObject);
         }
     }
 }

@@ -13,8 +13,13 @@ public class Fish : MonoBehaviour
 
     public Vector3 Vcage = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
+    public Vector3 Sref = Vector3.zero;
     Vector3 Vprev = Vector3.zero;
-    
+
+    public float ck;
+    public float sk;
+
+
     // Cached
     Material material;
     Transform cachedTransform;
@@ -35,7 +40,7 @@ public class Fish : MonoBehaviour
 
     public float Length = 1;
 
-    public float Speed = 5;
+    public float Speed;
 
 
     public void Start() {
@@ -68,7 +73,8 @@ public class Fish : MonoBehaviour
             Vcage += new Vector3(0, 0, -4.5f-transform.position.z);
         }
 
-        Vref = Vref*0.4f + (1.0f-0.4f)*Vcage;
+
+        Vref = Vref*0.4f + (1.0f-0.4f)*(ck*Vcage + sk*Sref);
         Vref = Vref.normalized;
         transform.position += Vref*Time.deltaTime*Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);

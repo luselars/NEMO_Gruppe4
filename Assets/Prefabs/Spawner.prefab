@@ -44,8 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b13992cb2a1944b4a8f25cfefe39dfdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 8618188713237364396, guid: 7788bd7050779894ea98e86ed50e0c4b, type: 3}
-  spawnRadius: 5
+  prefab: {fileID: 8603205425890268338, guid: 7788bd7050779894ea98e86ed50e0c4b, type: 3}
+  spawnRadius: 15
   spawnCount: 10
-  colour: {r: 0.745283, g: 0.45349768, b: 0.6134497, a: 0}
-  showSpawnRegion: 0
