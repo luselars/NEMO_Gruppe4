@@ -9,28 +9,13 @@ public class spawner : MonoBehaviour
     public Fish prefab;
     public float spawnRadius = 5;
     public int spawnCount = 10;
-    public Color colour;
-    public GizmoType showSpawnRegion;
 
     void Awake () {
-        
-    }
-
-    private void OnDrawGizmos () {
-        if (showSpawnRegion == GizmoType.Always) {
-            DrawGizmos ();
+        for (int i = 0; i < spawnCount; i++) {
+            Vector3 pos = transform.position + Random.insideUnitSphere * spawnRadius;
+            Fish fish = Instantiate (prefab);
+            fish.transform.position = pos;
+            fish.transform.forward = Random.insideUnitSphere;
         }
-    }
-
-    void OnDrawGizmosSelected () {
-        if (showSpawnRegion == GizmoType.SelectedOnly) {
-            DrawGizmos ();
-        }
-    }
-
-    void DrawGizmos () {
-
-        Gizmos.color = new Color (colour.r, colour.g, colour.b, 0.3f);
-        Gizmos.DrawSphere (transform.position, spawnRadius);
     }
 }

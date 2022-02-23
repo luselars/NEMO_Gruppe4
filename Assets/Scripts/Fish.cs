@@ -4,9 +4,39 @@ using UnityEngine;
 
 public class Fish : MonoBehaviour
 {
+    FishSettings settings;
+
+    [HideInInspector]
+    public Vector3 position;
+    [HideInInspector]
+    public Vector3 forward;
+
     public Vector3 Vcage = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
     Vector3 Vprev = Vector3.zero;
+    
+    // Cached
+    Material material;
+    Transform cachedTransform;
+
+    void Awake () {
+        material = transform.GetComponentInChildren<MeshRenderer> ().material;
+        cachedTransform = transform;
+    }
+
+    public void Initialize (FishSettings settings) {
+        this.settings = settings;
+
+        position = cachedTransform.position;
+        forward = cachedTransform.forward;
+
+        //velocity = transform.forward * startSpeed;
+    }
+
+    public float Length = 1;
+
+    public float Speed = 5;
+
 
     Feeding feeding;
 
@@ -37,10 +67,9 @@ public class Fish : MonoBehaviour
             Vcage += new Vector3(0, 0, -4.5f-transform.position.z);
         }
 
-        Vcage = Vcage;
         Vref = Vref*0.4f + (1.0f-0.4f)*Vcage;
         Vref = Vref.normalized;
-        transform.position += Vref*Time.deltaTime*5;
+        transform.position += Vref*Time.deltaTime*Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
         transform.Rotate(0, 90, 0);
         Vprev = Vref;
