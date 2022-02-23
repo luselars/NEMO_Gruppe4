@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class Fish : MonoBehaviour
 {
-
     public Vector3 Vcage = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
     Vector3 Vprev = Vector3.zero;
 
+    Feeding feeding;
+
     public void Start() {
         transform.position = (Random.onUnitSphere*15);
+        feeding = FindObjectOfType<Feeding>();
     }
 
-    public void Update () {
-
+    public void Update () {        
         var distanceref = 0.5f;
         Vcage = new Vector3(0,0,0);
         if (transform.position.y >= 9) {
