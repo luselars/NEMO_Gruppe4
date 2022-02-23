@@ -43,15 +43,14 @@ public class Fish : MonoBehaviour
     public float Speed;
 
 
+    Feeding feeding;
+
     public void Start() {
-        
+        transform.position = (Random.onUnitSphere*15);
+        feeding = FindObjectOfType<Feeding>();
     }
 
-    
-
-    public void Update () {
-        
-        //Vcage
+    public void Update () {        
         var distanceref = 0.5f;
         Vcage = new Vector3(0,0,0);
         if (transform.position.y >= 9) {
