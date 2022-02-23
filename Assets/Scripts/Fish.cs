@@ -64,6 +64,8 @@ public class Fish : MonoBehaviour
         Vref = Vref*0.4f + (1.0f-0.4f)*Vcage;
         Vref = Vref.normalized;
         transform.position += Vref*Time.deltaTime*5;
+        transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
+        transform.Rotate(0, 90, 0);
         Vprev = Vref;
     }    
 
