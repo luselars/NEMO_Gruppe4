@@ -49,7 +49,7 @@ public class Fish : MonoBehaviour
         
         float distance = Vector3.Distance(origo, transform.position);
 
-        if (distance >= settings.FarmRadius-settings.PreferredCageDistance)
+        if (distance >= settings.FarmRadius/2-settings.PreferredCageDistance)
         {
             Vcage = - (transform.position - origo).normalized;
         }
