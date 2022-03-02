@@ -107,12 +107,19 @@ public class Fish : MonoBehaviour
 
         float angle = Vector3.Angle(Vprev, Vref);
 
+        Vector3 VprevHor = new Vector3(Vprev.x, 0, Vprev.z);
 
 
 
-        if(angle < 2 || Vector3.Angle(Plane, Vref) > 60)
+
+        if(angle < 2)
         {
             Vprev = Vref;
+        }
+
+        if (angle > 60)
+        {
+
         }
         
     }    
