@@ -24,6 +24,8 @@ public class Fish : MonoBehaviour
     [HideInInspector]
     public float Speed;
 
+    private float stomachVolume;
+
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
     }
@@ -32,13 +34,8 @@ public class Fish : MonoBehaviour
         this.settings = settings;
         Speed = settings.Speed;
         Bodylength = settings.BodyLength;
-        stomachVolume = settings.maxStomachVolume*0.5f;
+        stomachVolume = settings.MaxStomachVolume*0.5f;
         //velocity = transform.forward * startSpeed;
-    }
-
-    
-
-    public void Start() {
         feeding = FindObjectOfType<Feeding>();
     }
 
