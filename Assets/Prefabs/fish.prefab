@@ -51,6 +51,10 @@ MonoBehaviour:
   Vref: {x: 0, y: 0, z: 0}
   ck: 0.5
   sk: 0.1
+  upperBound: 20
+  lowerBound: 1
+  radius: 23
+  time: 0
   Length: 1
   Speed: 0.9
 --- !u!1001 &8603205425298366986

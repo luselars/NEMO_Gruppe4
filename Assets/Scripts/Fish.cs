@@ -16,8 +16,17 @@ public class Fish : MonoBehaviour
 
     Vector3 Vprev = Vector3.zero;
 
+    // weighing constants for cage and social behaviour
     public float ck;
     public float sk;
+
+    // Cage definitions
+    public float upperBound;
+    public float lowerBound;
+    public float radius;
+
+    // value between 0 and 24 that signifies what time of day it is.
+    public float time;
 
     // Cached
     Material material;
@@ -48,7 +57,21 @@ public class Fish : MonoBehaviour
         
         float distance = Vector3.Distance(origo, transform.position);
 
-        if (distance >= 10.0f-distanceref)
+
+        // Sets Behaviour of fish when too close to the edge of the cage. 
+        if (distance >= radius)
+        {
+            Vcage = -(transform.position - origo).normalized;
+        }
+        if (transform.position.y >= (upperBound))
+        {
+            Vcage += new Vector3(0, upperBound - transform.position.y, 0);
+        }
+        if (transform.position.y <= lowerBound)
+        {
+            Vcage += new Vector3(0, lowerBound - transform.position.y, 0);
+        }
+        /*if (distance >= 10.0f-distanceref)
         {
             Vcage = - (transform.position - origo).normalized;
         }
@@ -58,10 +81,10 @@ public class Fish : MonoBehaviour
         }
         if (transform.position.y <= 1){
             Vcage += new Vector3(0, 1.0f-transform.position.y, 0);
-        }
+        }*/
 
         //update position
-        Vref = Vprev*0.65f + (1.0f-0.65f)*(Vcage*ck + Vso*sk); //Vso);
+        Vref = Vprev*0.65f + (1.0f-0.65f) * (ck * Vcage + sk * Vso); //Vso);
         Vref = Vref.normalized;
         transform.position += Vref*Time.deltaTime*Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
@@ -100,7 +123,7 @@ public class Fish : MonoBehaviour
 
         if (HAngle > 2)
         {
-            Vprev = Quaternion.AngleAxis(HAngle-2, Vector3.up) * Vprev;
+            Vprev = Quaternion.AngleAxis(HAngle-60, Vector3.up) * Vprev;
         }
     }    
 
