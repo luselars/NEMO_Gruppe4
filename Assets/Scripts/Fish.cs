@@ -32,12 +32,14 @@ public class Fish : MonoBehaviour
         this.settings = settings;
         Speed = settings.Speed;
         Bodylength = settings.BodyLength;
+        stomachVolume = settings.maxStomachVolume*0.5f;
+        //velocity = transform.forward * startSpeed;
     }
 
     
 
     public void Start() {
-        //feeding = FindObjectOfType<Feeding>();
+        feeding = FindObjectOfType<Feeding>();
     }
 
     public void UpdateFish () {

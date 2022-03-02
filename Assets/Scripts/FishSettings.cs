@@ -17,6 +17,7 @@ public class FishSettings : ScriptableObject {
     public float BodyLength = 1;
     public float Speed = 3;
 
+    public float maxStomachVolume = 120; //in grams
 
     [Header ("Behaviour")]
     public float PreferredDistance = .66f;
