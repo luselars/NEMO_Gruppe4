@@ -1,8 +1,7 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 static const int threadGroupSize = 1024;
-static const float PreferredDist = 0.66;
-static const float DetectionDist = 3.00;
+
 
 struct Fish {
     float3 position;
@@ -13,6 +12,8 @@ struct Fish {
 
 RWStructuredBuffer<Fish> fish;
 int  numFish;
+float PreferredDist;
+float DetectionDist;
 
 [numthreads(threadGroupSize,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)

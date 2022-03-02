@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 688f055c5e881a04b9bd4ccccf3c83a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings: {fileID: 0}
+  settings: {fileID: 11400000, guid: d7bc9d7f37f9d07408ba647fe91aa876, type: 2}
   compute: {fileID: 7200000, guid: 0ec31182a00c11c449bc34914d428e64, type: 3}
 --- !u!1 &241851312
 GameObject:
@@ -662,8 +662,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: -3995531951667298694, guid: 7788bd7050779894ea98e86ed50e0c4b, type: 3}
-  spawnRadius: 20
-  spawnCount: 10000
+  settings: {fileID: 11400000, guid: d7bc9d7f37f9d07408ba647fe91aa876, type: 2}
 --- !u!4 &1579310043
 Transform:
   m_ObjectHideFlags: 0
