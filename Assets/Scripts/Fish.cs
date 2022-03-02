@@ -25,9 +25,13 @@ public class Fish : MonoBehaviour
     public float Speed;
 
     private float stomachVolume;
+    private float probFoodDetection;
+    private Vector3 feedingPos;
 
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
+        feeding = FindObjectOfType<Feeding>();
+        
     }
 
     public void Initialize (FishSettings settings) {
@@ -36,10 +40,10 @@ public class Fish : MonoBehaviour
         Bodylength = settings.BodyLength;
         stomachVolume = settings.MaxStomachVolume*0.5f;
         //velocity = transform.forward * startSpeed;
-        feeding = FindObjectOfType<Feeding>();
     }
 
     public void UpdateFish () {
+        feedingPos = feeding.transform.position;
         
         //Vcage
         Vcage = new Vector3(0,0,0);
@@ -102,6 +106,26 @@ public class Fish : MonoBehaviour
         {
             Vprev = Quaternion.AngleAxis(HAngle-2, Vector3.up) * Vprev;
         }
+    }
+
+    //prob increases when distance to feeding area decreases
+    private float ProbFoodDetection()
+    {
+        return 1/(1+Vector3.Distance(feedingPos, transform.position));
     }    
+
+    private float ProbFeelingHungry()
+    {
+        return null;
+    }   
+
+    private float ProbPelletCapture()
+    {
+        return null;
+    } 
+
+
+
+
 
 }
