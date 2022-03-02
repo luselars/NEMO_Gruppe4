@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Cage : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public FishSettings settings;
     void Start()
     {
-        
+        //GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
     }
 
     // Update is called once per frame
