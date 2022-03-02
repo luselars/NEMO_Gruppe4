@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2145632a9cb15c249879f9a7d266191f, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  targetWeight: 0.5
-  boundsRadius: 0.27
-  avoidCollisionWeight: 5
-  collisionAvoidDst: 5
+  Radius: 1
+  Height: 3
+  Bodylength: 1
+  Speed: 3
+  PreferredDistance: 0.66
+  DetectionDistance: 3
+  Directionchangeweight: 0.45
+  Cageweight: 10
+  Socialweight: 0.01

@@ -14,12 +14,15 @@ public class Fish : MonoBehaviour
     public Vector3 Vso = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
 
+    [HideInInspector]
     Vector3 Vprev = Vector3.zero;
-
-    public float ck;
 
     // Cached
     Material material;
+    [HideInInspector]
+    public float Bodylength;
+    [HideInInspector]
+    public float Speed;
 
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
@@ -27,11 +30,11 @@ public class Fish : MonoBehaviour
 
     public void Initialize (FishSettings settings) {
         this.settings = settings;
-        //velocity = transform.forward * startSpeed;
+        Speed = settings.Speed;
+        Bodylength = settings.BodyLength;
     }
 
-    public float Length = 1;
-    public float Speed = 3;
+    
 
     public void Start() {
         //feeding = FindObjectOfType<Feeding>();
@@ -40,14 +43,13 @@ public class Fish : MonoBehaviour
     public void UpdateFish () {
         
         //Vcage
-        var distanceref = 0.5f;
         Vcage = new Vector3(0,0,0);
 
         Vector3 origo = new Vector3(0.0f, transform.position.y, 0.0f);
         
         float distance = Vector3.Distance(origo, transform.position);
 
-        if (distance >= 10.0f-distanceref)
+        if (distance >= settings.FarmRadius-settings.PreferredCageDistance)
         {
             Vcage = - (transform.position - origo).normalized;
         }
@@ -60,7 +62,7 @@ public class Fish : MonoBehaviour
         }
 
         //update position
-        Vref = Vprev*0.65f + (1.0f-0.65f)*(Vcage + Vso*0.1f); //Vso);
+        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight);
         Vref = Vref.normalized;
         transform.position += Vref*Time.deltaTime*Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
