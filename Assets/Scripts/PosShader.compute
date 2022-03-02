@@ -1,15 +1,45 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
+static const int threadGroupSize = 1024;
+static const float PreferredDist = 0.66;
+static const float DetectionDist = 3.00*0.5;
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float4> Result;
+struct Fish {
+    float3 position;
+    float3 direction;
+    float3 Vso;
+    int numDetectedFish;
+};
 
+RWStructuredBuffer<Fish> fish;
+int  numFish;
 
-[numthreads(8,8,1)]
+[numthreads(threadGroupSize,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    // TODO: insert actual code here!
+    for (int indexB = 0; indexB < numFish; indexB ++) {
+        fish[id.x].numDetectedFish = 0;
+        if (id.x != indexB) {
+            Fish fishB = fish[indexB];
+            float dist = distance(fish[id.x].position, fishB.position);
 
-    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+            //float3 offset = boidB.position - boids[id.x].position;
+            //float sqrDst = offset.x * offset.x + offset.y * offset.y + offset.z * offset.z;
+
+            if (dist >= PreferredDist && dist < DetectionDist && dist > 0) {
+                    float align = (dist - DetectionDist) / (DetectionDist - PreferredDist);
+                    fish[id.x].Vso += 0.3 * align* fishB.direction;
+                    fish[id.x].numDetectedFish += 1;
+                } else if (dist < PreferredDist && dist > 0) // makes the fish move away if too close
+                {
+                    float3 distVector = fish[id.x].position - fishB.position;
+                    fish[id.x].Vso += distVector * (PreferredDist - dist);
+                    fish[id.x].numDetectedFish += 1;
+                }
+        }
+    }
+    if (fish[id.x].numDetectedFish>0){
+        fish[id.x].Vso = fish[id.x].Vso/fish[id.x].numDetectedFish;
+    }
+    
 }

@@ -12,6 +12,7 @@ public class Fish : MonoBehaviour
     public Vector3 forward;
 
     public Vector3 Vcage = Vector3.zero;
+    public Vector3 Vso = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
     Vector3 Vprev = Vector3.zero;
     
@@ -34,17 +35,13 @@ public class Fish : MonoBehaviour
     }
 
     public float Length = 1;
-
-    public float Speed = 5;
-
+    public float Speed = 1;
 
     public void Start() {
         
     }
 
-    
-
-    public void Update () {
+    public void UpdateFish () {
         
         //Vcage
         var distanceref = 0.5f;
@@ -68,10 +65,14 @@ public class Fish : MonoBehaviour
             Vcage += new Vector3(0, 0, -4.5f-transform.position.z);
         }
 
-        Vref = Vref*0.4f + (1.0f-0.4f)*Vcage;
+        Vref = Vref*0.65f + (1.0f-0.65f)*(3*Vcage+Vso);
         Vref = Vref.normalized;
-        transform.position += Vref*Time.deltaTime*Speed;
-        transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
+        cachedTransform.position += Vref*Time.deltaTime*Speed;
+        transform.position = cachedTransform.position;
+        cachedTransform.forward = Vref;
+        forward = cachedTransform.forward;
+        //forward = Vref;
+        cachedTransform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
         transform.Rotate(0, 90, 0);
         Vprev = Vref;
     }    

@@ -10,6 +10,8 @@ public class FishManager : MonoBehaviour
     public ComputeShader compute;
     Fish[] fish;
 
+    public int fishlength;
+
     void Start () {
         fish = FindObjectsOfType<Fish> ();
         foreach (Fish f in fish) {
@@ -18,9 +20,47 @@ public class FishManager : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void Update() {
+         if (fish != null) {
+
+            int numfish = fish.Length;
+            var FishData = new FishData[numfish];
+
+            for (int i = 0; i < fish.Length; i++) {
+                FishData[i].position = fish[i].position;
+                FishData[i].direction = fish[i].forward;
+            }
+
+            var fishBuffer = new ComputeBuffer (numfish, sizeof (float) * 3 * 3 + sizeof (int)); //FishData.Size);
+            fishBuffer.SetData (FishData);
+
+            compute.SetBuffer (0, "fish", fishBuffer);
+            compute.SetInt ("numFish", fish.Length);
+
+            int threadGroups = Mathf.CeilToInt (numfish / (float) threadGroupSize);
+            compute.Dispatch (0, threadGroups, 1, 1);
+
+            fishBuffer.GetData (FishData);
+            print(FishData);
+            for (int i = 0; i < fish.Length; i++) {
+                fish[i].Vso = FishData[i].Vso;
+
+                fish[i].UpdateFish ();
+            }
+            fishlength = fish.Length;
+            fishBuffer.Release ();
+        }
+    }
+    public struct FishData {
+        public Vector3 position;
+        public Vector3 direction;
+        public Vector3 Vso;
+        public int numDetectedFish;
+
+        public static int Size {
+            get {
+                return sizeof (float) * 3 * 3 + sizeof (int);
+            }
+        }
     }
 }

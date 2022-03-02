@@ -28,7 +28,7 @@ void Start()
     }
 
     // Update is called once per frame
-    void Update()
+    void UpdateSoc()
     {
 
 
@@ -37,7 +37,6 @@ void Start()
             for(int j = i; j < Children.Count; j++)
             {
                 float dist = Vector3.Distance(Children[i].transform.position, Children[j].transform.position);
-                print(dist);
 
                 
                 
