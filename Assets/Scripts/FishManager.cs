@@ -55,11 +55,5 @@ public class FishManager : MonoBehaviour
         public Vector3 direction;
         public Vector3 Vso;
         public int numDetectedFish;
-
-        /*public static int Size {
-            get {
-                return sizeof (float) * 3 * 3 + sizeof (int);
-            }
-        }*/
     }
 }

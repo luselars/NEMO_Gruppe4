@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FarmRadius: 10
   FarmHeight: 10
-  PreferredCageDistance: 0.5
+  PreferredCageDistance: 1
   SpawnRadius: 10
   SpawnCount: 1000
   BodyLength: 1
-  Speed: 3
-  PreferredDistance: 0.66
-  DetectionDistance: 3
+  Speed: 0.55
+  PreferredDistance: 1
+  DetectionDistance: 4
   DirectionchangeWeight: 0.45
-  CageWeight: 10
-  SocialWeight: 0.1
+  CageWeight: 0.1
+  SocialWeight: 0.02

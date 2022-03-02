@@ -10,7 +10,7 @@ public class spawner : MonoBehaviour
     void Awake () {
 
         for (int i = 0; i < settings.SpawnCount; i++) {
-            Vector3 pos = Random.onUnitSphere * settings.SpawnRadius;
+            Vector3 pos = (Random.onUnitSphere * settings.SpawnRadius) + new Vector3(0f, settings.FarmHeight/2, 0f);
             Fish fish = Instantiate(prefab);
             fish.transform.position = pos;
             fish.transform.forward = Random.insideUnitSphere;

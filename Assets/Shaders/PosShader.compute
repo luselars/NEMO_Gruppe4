@@ -43,7 +43,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         fish[id.x].Vso = fish[id.x].Vso/fish[id.x].numDetectedFish;
     }
     else {
-        fish[id.x].Vso = Vector3.zero;
+        fish[id.x].Vso = float3(0,0,0);
     }
     
 }

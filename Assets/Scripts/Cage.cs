@@ -9,8 +9,8 @@ public class Cage : MonoBehaviour
     public GameObject bottom;
     void Start()
     {
-        farm.transform.localScale = new Vector3 (settings.FarmRadius, settings.FarmHeight/2, settings.FarmRadius);
-        farm.transform.position = new Vector3(0, settings.FarmHeight/2, 0);
+        farm.transform.localScale = new Vector3 (settings.FarmRadius, settings.FarmHeight, settings.FarmRadius);
+        farm.transform.position = new Vector3(0, settings.FarmHeight, 0);
         bottom.transform.localScale = new Vector3 (settings.FarmRadius, 0.0001f, settings.FarmRadius);
     }
 

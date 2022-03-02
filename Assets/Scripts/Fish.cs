@@ -54,10 +54,10 @@ public class Fish : MonoBehaviour
             Vcage = - (transform.position - origo).normalized;
         }
 
-        if (transform.position.y >= 9) {
+        if (transform.position.y >= settings.FarmHeight-settings.PreferredCageDistance) {
             Vcage += new Vector3(0, 9-transform.position.y, 0);
         }
-        if (transform.position.y <= 1){
+        if (transform.position.y <= settings.PreferredCageDistance){
             Vcage += new Vector3(0, 1.0f-transform.position.y, 0);
         }
 
