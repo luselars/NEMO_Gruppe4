@@ -116,12 +116,12 @@ public class Fish : MonoBehaviour
 
     private float ProbFeelingHungry()
     {
-        return null;
+        return 0f;
     }   
 
     private float ProbPelletCapture()
     {
-        return null;
+        return 0f;
     } 
 
 
