@@ -49,9 +49,10 @@ MonoBehaviour:
   Vcage: {x: 0, y: 0, z: 0}
   Vso: {x: 0, y: 0, z: 0}
   Vref: {x: 0, y: 0, z: 0}
-  ck: 0
+  ck: 0.5
+  sk: 0.1
   Length: 1
-  Speed: 2
+  Speed: 0.9
 --- !u!1001 &8603205425298366986
 PrefabInstance:
   m_ObjectHideFlags: 0
