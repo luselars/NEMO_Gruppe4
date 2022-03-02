@@ -1,3 +1,4 @@
+/*
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +21,7 @@ void Start()
                  Children.Add(child.gameObject);
                 
              }
-         }*/
+         }*//*
 
         PreferredDist = (float)(0.66 * 0.1);
         Detection = (float)(3 * 0.1);
@@ -60,3 +61,4 @@ void Start()
         
     }
 }
+*/

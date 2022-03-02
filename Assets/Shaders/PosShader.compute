@@ -2,7 +2,7 @@
 #pragma kernel CSMain
 static const int threadGroupSize = 1024;
 static const float PreferredDist = 0.66;
-static const float DetectionDist = 3.00*0.5;
+static const float DetectionDist = 3.00;
 
 struct Fish {
     float3 position;
@@ -28,9 +28,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
             if (dist >= PreferredDist && dist < DetectionDist && dist > 0) {
                     float align = (dist - DetectionDist) / (DetectionDist - PreferredDist);
-                    fish[id.x].Vso += 0.3 * align* fishB.direction;
+                    fish[id.x].Vso += 0.5 * align * fishB.direction;
                     fish[id.x].numDetectedFish += 1;
-                } else if (dist < PreferredDist && dist > 0) // makes the fish move away if too close
+                } else if (dist < PreferredDist) // makes the fish move away if too close
                 {
                     float3 distVector = fish[id.x].position - fishB.position;
                     fish[id.x].Vso += distVector * (PreferredDist - dist);
