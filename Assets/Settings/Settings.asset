@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2145632a9cb15c249879f9a7d266191f, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  Radius: 1
-  Height: 3
-  Bodylength: 1
+  FarmRadius: 10
+  FarmHeight: 10
+  PreferredCageDistance: 0.5
+  SpawnRadius: 10
+  SpawnCount: 1000
+  BodyLength: 1
   Speed: 3
   PreferredDistance: 0.66
   DetectionDistance: 3
-  Directionchangeweight: 0.45
-  Cageweight: 10
-  Socialweight: 0.01
+  DirectionchangeWeight: 0.45
+  CageWeight: 10
+  SocialWeight: 0.1
