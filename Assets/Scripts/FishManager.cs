@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class FishManager : MonoBehaviour
 {
@@ -10,8 +11,12 @@ public class FishManager : MonoBehaviour
     public ComputeShader compute;
     Fish[] fish;
 
+    public float Izero;
+    
+
     void Start () {
-        fish = FindObjectsOfType<Fish> ();
+        fish = FindObjectsOfType<Fish>();
+
         foreach (Fish f in fish) {
             f.Initialize (settings);
         }
@@ -42,8 +47,11 @@ public class FishManager : MonoBehaviour
 
             fishBuffer.GetData (FishData);
 
+
+
             for (int i = 0; i < fish.Length; i++) {
                 fish[i].Vso = FishData[i].Vso;
+
 
                 fish[i].UpdateFish ();
             }

@@ -18,8 +18,8 @@ float DetectionDist;
 [numthreads(threadGroupSize,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    for (int indexB = 0; indexB < numFish; indexB ++) {
         fish[id.x].numDetectedFish = 0;
+    for (int indexB = 0; indexB < numFish; indexB ++) {
         if (id.x != indexB) {
             Fish fishB = fish[indexB];
             float dist = distance(fish[id.x].position, fishB.position);
@@ -34,7 +34,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
                 } else if (dist < PreferredDist) // makes the fish move away if too close
                 {
                     float3 distVector = fish[id.x].position - fishB.position;
-                    fish[id.x].Vso += distVector * (PreferredDist - dist);
+                    fish[id.x].Vso += distVector * 2 *(PreferredDist - dist);
                     fish[id.x].numDetectedFish += 1;
                 }
         }
