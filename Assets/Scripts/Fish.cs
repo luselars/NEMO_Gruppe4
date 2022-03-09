@@ -27,6 +27,7 @@ public class Fish : MonoBehaviour
     private float stomachVolume;
     private float probFoodDetection;
     private Vector3 feedingPos;
+    private Vector3 xzPosFeedingObj;
 
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
@@ -39,12 +40,13 @@ public class Fish : MonoBehaviour
         Speed = settings.Speed;
         Bodylength = settings.BodyLength;
         stomachVolume = settings.MaxStomachVolume*0.5f;
+        
         //velocity = transform.forward * startSpeed;
+       
     }
 
     public void UpdateFish () {
-        feedingPos = feeding.transform.position;
-        
+
         //Vcage
         Vcage = new Vector3(0,0,0);
 
@@ -107,37 +109,45 @@ public class Fish : MonoBehaviour
         {
             Vprev = Quaternion.AngleAxis(HAngle - 2, Vector3.up) * Vprev;
         }
+    
+        transform.position += Vref * Time.deltaTime;// *Speed;
+        transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
+        transform.Rotate(0, 90, 0);
+        Vprev = Vref;
     }
 
     //prob increases when distance to feeding area decreases
     private float ProbFoodDetection()
     {
-        return 1/(1+Vector3.Distance(feedingPos, transform.position));
-
-        transform.position += Vref * Time.deltaTime;// *Speed;
-        transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
-        transform.Rotate(0, 90, 0);
-        Vprev = Vref;
-        
-        
-
-        Vprev = Vref;
-
-       
+        return 1/(1+Vector3.Distance(feeding.transform.position, transform.position));
     }    
 
     private float ProbFeelingHungry()
     {
-        return 0f;
+        float probFeelHunger;
+        float rand = Random.Range(0.0096f, 120f) ;
+        float Xnorm = (rand - 0.0096f)/(120f - 0.0096f); // normalised stomach volume
+
+        if (Xnorm >= 0.3){
+            probFeelHunger = 0.5f - (0.57f * (Xnorm - 0.3f/ Xnorm -0.2f));
+            return probFeelHunger;
+        } else {
+            probFeelHunger = 0.5f + (0.67f * (0.3f - Xnorm/ 0.4f - Xnorm));
+            return probFeelHunger;
+        }
     }   
 
     private float ProbPelletCapture()
-    {
-        return 0f;
+    {   
+        Vector3 xzFeedingPos = new Vector3(feeding.transform.position.x, transform.position.y, feeding.transform.position.z);
+        float radius = feeding.transform.localScale.x/10f;
+        bool isFishInsideFeedingRadius = Vector3.Distance(xzFeedingPos, transform.position)<radius;
+
+        if (isFishInsideFeedingRadius){
+            float probPelletCapture = 0.05f/Mathf.Pow(1+Vector3.Distance(feedingPos, transform.position), 3f);
+            return probPelletCapture;
+        }else{
+            return 0f;
+        }
     } 
-
-
-
-
-
 }
