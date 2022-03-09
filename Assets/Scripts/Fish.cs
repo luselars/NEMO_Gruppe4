@@ -64,20 +64,21 @@ public class Fish : MonoBehaviour
         //update position
         Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight);
         Vref = Vref.normalized;
-        transform.position += Vref*Time.deltaTime*Speed;
-        transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
-        transform.Rotate(0, 90, 0);
-        Vprev = Vref;
-        
+
+        // Angle updates
         Vector3 VprevHor = new Vector3(Vprev.x, 0, Vprev.z);
         Vector3 VrefHor = new Vector3(Vref.x, 0, Vref.z);
 
         float HAngle = Vector3.Angle(VprevHor, VrefHor);
 
-        Vprev = Vref;
+        Vref = Vref * Speed;
+        if (Vref == Vector3.zero)
+        {
+            Vref.x = 1;
+        }
 
         float maxY = Speed / 2;
-        if(Vref.y > maxY)
+        if (Vref.y > maxY)
         {
             float diff = Vref.y - maxY;
             float xfrac = Vref.x / (Vref.x + Vref.z);
@@ -101,8 +102,19 @@ public class Fish : MonoBehaviour
 
         if (HAngle > 2)
         {
-            Vprev = Quaternion.AngleAxis(HAngle-2, Vector3.up) * Vprev;
+            Vprev = Quaternion.AngleAxis(HAngle - 2, Vector3.up) * Vprev;
         }
+
+        transform.position += Vref * Time.deltaTime;// *Speed;
+        transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
+        transform.Rotate(0, 90, 0);
+        Vprev = Vref;
+        
+        
+
+        Vprev = Vref;
+
+       
     }    
 
 }
