@@ -208,7 +208,7 @@ public class Fish : MonoBehaviour
     private float ProbFeelingHungry()
     {
         float probFeelHunger;
-        float rand = Random.Range(0.0096f, 120f) ;
+        float rand = UnityEngine.Random.Range(0.0096f, 120f) ;
         float Xnorm = (rand - 0.0096f)/(120f - 0.0096f); // normalised stomach volume
 
         if (Xnorm >= 0.3){
