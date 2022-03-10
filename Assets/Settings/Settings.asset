@@ -12,15 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2145632a9cb15c249879f9a7d266191f, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  FarmRadius: 10
-  FarmHeight: 10
+  FarmRadius: 20
+  FarmHeight: 20
   PreferredCageDistance: 1
-  SpawnRadius: 10
-  SpawnCount: 1000
+  SpawnRadius: 7
+  SpawnCount: 3000
+  Time: 16
+  I_L: 3.4
+  I_U: 76.4
+  Tmax: 16
+  Tmin: 2
   BodyLength: 1
-  Speed: 0.55
-  PreferredDistance: 1
-  DetectionDistance: 4
+  Speed: 0.9
+  MaxStomachVolume: 120
+  PreferredDistance: 0.66
+  DetectionDistance: 3
   DirectionchangeWeight: 0.45
-  CageWeight: 0.1
-  SocialWeight: 0.02
+  CageWeight: 0.8
+  SocialWeight: 0.4
+  LightWeight: 0.5
+  TempWeight: 0.6
+  Tu: 16
+  Tl: 13
+  TempUpperSteep: 80
+  TempLowerSteep: -20
