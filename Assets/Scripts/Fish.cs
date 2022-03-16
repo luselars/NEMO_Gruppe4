@@ -16,6 +16,8 @@ public class Fish : MonoBehaviour
     public Vector3 Vref = Vector3.zero;
     public Vector3 Vli = Vector3.zero;
     public Vector3 Vtemp = Vector3.zero;
+    public Vector3 VFeeding = Vector3.zero;
+    
 
     public float PreferredLightUpper;
     public float PreferredLightLower;
@@ -28,6 +30,9 @@ public class Fish : MonoBehaviour
 
     public float TGy;
     public float T;
+
+    private FeedingState currentFeedingState;
+    private enum FeedingState {Normal, Satiated, Approach, Manipulate}
 
     [HideInInspector]
     Vector3 Vprev = Vector3.zero;
@@ -47,8 +52,7 @@ public class Fish : MonoBehaviour
 
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
-        feeding = FindObjectOfType<Feeding>();
-        
+        feeding = FindObjectOfType<Feeding>();   
     }
 
     public void Initialize (FishSettings settings) {
@@ -78,13 +82,8 @@ public class Fish : MonoBehaviour
     }
 
     public void Start() {
-        //feeding = FindObjectOfType<Feeding>();
-
         stomachVolume = settings.MaxStomachVolume*0.5f;
-        
-        //velocity = transform.forward * startSpeed;
-       
-
+        currentFeedingState = FeedingState.Normal;
     }
 
     public void UpdateFish () {
@@ -107,6 +106,9 @@ public class Fish : MonoBehaviour
         if (transform.position.y <= settings.PreferredCageDistance){
             Vcage += new Vector3(0, settings.PreferredCageDistance-transform.position.y, 0);
         }
+
+        //Feeding stuff
+        FeedBehaviour(currentPosition, feedingPosition);
 
         // Light stuff
 
@@ -150,8 +152,13 @@ public class Fish : MonoBehaviour
             Vtemp += new Vector3(0, -TGy, 0) * ((settings.Tl - T) / (settings.Tl - settings.TempLowerSteep));
         }
 
-        
-        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
+        if(currentFeedingState==FeedingState.Approach ||currentFeedingState==FeedingState.Manipulate)
+        {
+            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + VFeeding*settings.FeedingWeight + Vso*settings.SocialWeight);
+        } else
+        {
+            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
+        }        
         Vref = Vref.normalized;
 
         // Angle updates
@@ -199,13 +206,80 @@ public class Fish : MonoBehaviour
         Vprev = Vref;
     }
 
+    void FeedBehaviour(Vector3 currentPosition, Vector3 feedingPosition){
+
+        
+        if(feeding.isFeeding)
+        {
+            //in Mode Normal -> Satiated
+            if(currentFeedingState==FeedingState.Normal && ProbFoodDetection() < 0.75f)
+            {
+                currentFeedingState = FeedingState.Satiated;
+            }
+            //in Mode Normal -> Approach            
+            else if(currentFeedingState==FeedingState.Normal && ProbFeelingHungry() > 0.75f)
+            {   
+                currentFeedingState = FeedingState.Approach;
+            }
+            //in Mode Satiated -> Approach
+            else if(currentFeedingState == FeedingState.Satiated && ProbFeelingHungry()>=0.75f)
+            {
+                currentFeedingState = FeedingState.Approach;
+            }
+            //in Mode Approach -> Manipulate
+            else if(currentFeedingState == FeedingState.Approach && ProbPelletCapture()>=0.75f)
+            {
+                currentFeedingState = FeedingState.Manipulate;
+            }
+            //in Mode Manipulate -> Approach
+            else if(currentFeedingState == FeedingState.Manipulate && ProbFeelingHungry()>=0.75f)
+            {
+                currentFeedingState = FeedingState.Approach;
+            }
+            //in Mode Manipulate -> Satiated
+            else if(currentFeedingState == FeedingState.Manipulate && ProbFeelingHungry()<0.75f)
+            {
+                currentFeedingState = FeedingState.Satiated;
+            }
+        } 
+
+        switch(currentFeedingState)
+        {
+            case FeedingState.Normal:
+                //continue normally
+                VFeeding = Vector3.zero;
+                break;
+            case FeedingState.Satiated:
+                //continue normally
+                VFeeding = Vector3.zero;
+                break;
+            case FeedingState.Approach:
+                //move towards feeding area
+                //disregard vert axis by temp & light
+                VFeeding = feedingPosition - currentPosition;
+                break;
+            case FeedingState.Manipulate:
+                //if pellet capture success -> hold manipulate for between 5-30 sec
+                //during manipulate the fish don't respond to temp&light
+                //evaluate hunger status after pellet consumption
+                VFeeding = Vector3.zero;
+                float randTimer = UnityEngine.Random.Range(5f, 30f);
+                randTimer -= Time.deltaTime;
+                if(randTimer<0.0f){
+                    currentFeedingState=FeedingState.Manipulate;
+                }           
+                break;
+            }
+    }
+
+
     //prob increases when distance to feeding area decreases
-    private float ProbFoodDetection()
+    float ProbFoodDetection()
     {
         return 1/(1+Vector3.Distance(feeding.transform.position, transform.position));
     }    
 
-    private float ProbFeelingHungry()
+    float ProbFeelingHungry()
     {
         float probFeelHunger;
         float rand = UnityEngine.Random.Range(0.0096f, 120f) ;
@@ -220,7 +294,7 @@ public class Fish : MonoBehaviour
         }
     }   
 
-    private float ProbPelletCapture()
+    float ProbPelletCapture()
     {   
         Vector3 xzFeedingPos = new Vector3(feeding.transform.position.x, transform.position.y, feeding.transform.position.z);
         float radius = feeding.transform.localScale.x/10f;

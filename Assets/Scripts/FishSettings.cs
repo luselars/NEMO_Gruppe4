@@ -31,6 +31,7 @@ public class FishSettings : ScriptableObject {
     public float SocialWeight = 0.4f;
     public float LightWeight = 0.5f;
     public float TempWeight = 0.6f;
+    public float FeedingWeight = 0.5f;
     public float Tu = 16f;
     public float Tl = 13f;
     public float TempUpperSteep = 80f;
