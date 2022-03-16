@@ -28,10 +28,11 @@ MonoBehaviour:
   PreferredDistance: 0.66
   DetectionDistance: 3
   DirectionchangeWeight: 0.45
-  CageWeight: 0.8
+  CageWeight: 1
   SocialWeight: 0.4
   LightWeight: 0.5
   TempWeight: 0.6
+  FeedingWeight: 0.5
   Tu: 16
   Tl: 13
   TempUpperSteep: 80

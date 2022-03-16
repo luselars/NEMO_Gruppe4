@@ -8,8 +8,9 @@ public class Fish : MonoBehaviour
     FishSettings settings;
     Feeding feeding;
 
-    [HideInInspector]
+    //[HideInInspector]
     public Vector3 currentPosition;
+    public Vector3 feedingPosition;
 
     public Vector3 Vcage = Vector3.zero;
     public Vector3 Vso = Vector3.zero;
@@ -31,8 +32,8 @@ public class Fish : MonoBehaviour
     public float TGy;
     public float T;
 
-    private FeedingState currentFeedingState;
-    private enum FeedingState {Normal, Satiated, Approach, Manipulate}
+    public FeedingState currentFeedingState;
+    public enum FeedingState {Normal, Satiated, Approach, Manipulate}
 
     [HideInInspector]
     Vector3 Vprev = Vector3.zero;
@@ -52,9 +53,7 @@ public class Fish : MonoBehaviour
 
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
-        feeding = FindObjectOfType<Feeding>();
-        Vector3 feedingPosition = feeding.transform.position;
-        
+        feeding = FindObjectOfType<Feeding>();        
     }
 
     public void Initialize (FishSettings settings) {
@@ -87,6 +86,7 @@ public class Fish : MonoBehaviour
     public void Start() {
         stomachVolume = settings.MaxStomachVolume*0.5f;
         currentFeedingState = FeedingState.Normal;
+        feedingPosition = feeding.transform.position;
     }
 
     Vector3 calculateVcage(Vector3 currentPosition) {
@@ -104,10 +104,17 @@ public class Fish : MonoBehaviour
             }
             return Vcage;
         }
+
     public void UpdateFish () {
 
+        //print("frame rate");
+        //print(1.0f / Time.deltaTime);
+        // fish framerate på 3
+
+        //fixe at approach? oppdateres seg raskere enn fishUpdate
+
         //Vcage
-        Vector3 currentposition = transform.position;        
+        currentPosition = transform.position;       
 
         //Feeding stuff
         FeedBehaviour(currentPosition, feedingPosition);
@@ -154,12 +161,12 @@ public class Fish : MonoBehaviour
             Vtemp += new Vector3(0, -TGy, 0) * ((settings.Tl - T) / (settings.Tl - settings.TempLowerSteep));
         }
 
-        if(currentFeedingState==FeedingState.Approach ||currentFeedingState==FeedingState.Manipulate)
+        if(currentFeedingState==FeedingState.Approach || currentFeedingState==FeedingState.Manipulate)
         {
-            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + VFeeding*settings.FeedingWeight + Vso*settings.SocialWeight);
+            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentPosition)*settings.CageWeight + VFeeding*settings.FeedingWeight + Vso*settings.SocialWeight);
         } else
         {
-            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
+            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentPosition)*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
         }        
         Vref = Vref.normalized;
 
@@ -208,9 +215,11 @@ public class Fish : MonoBehaviour
         Vprev = Vref;
     }
 
-    void FeedBehaviour(Vector3 currentPosition, Vector3 feedingPosition){
+    public void FeedBehaviour(Vector3 currPos, Vector3 Fpos){
 
-        
+        if(!feeding.isFeeding){
+            currentFeedingState = FeedingState.Normal;
+        }
         if(feeding.isFeeding)
         {
             //in Mode Normal -> Satiated
@@ -229,7 +238,7 @@ public class Fish : MonoBehaviour
                 currentFeedingState = FeedingState.Approach;
             }
             //in Mode Approach -> Manipulate
-            else if(currentFeedingState == FeedingState.Approach && ProbPelletCapture()>=0.75f)
+            else if(currentFeedingState == FeedingState.Approach && ProbPelletCapture()>=0.5f)
             {
                 currentFeedingState = FeedingState.Manipulate;
             }
