@@ -9,7 +9,7 @@ public class Fish : MonoBehaviour
     Feeding feeding;
 
     [HideInInspector]
-    public Vector3 position;
+    public Vector3 currentPosition;
 
     public Vector3 Vcage = Vector3.zero;
     public Vector3 Vso = Vector3.zero;
@@ -52,13 +52,16 @@ public class Fish : MonoBehaviour
 
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
-        feeding = FindObjectOfType<Feeding>();   
+        feeding = FindObjectOfType<Feeding>();
+        Vector3 feedingPosition = feeding.transform.position;
+        
     }
 
     public void Initialize (FishSettings settings) {
         this.settings = settings;
         Speed = settings.Speed;
         Bodylength = settings.BodyLength;
+        stomachVolume = settings.MaxStomachVolume*0.5f; 
 
 
         // set lower bound for light as a random between set boundaries
@@ -82,37 +85,40 @@ public class Fish : MonoBehaviour
     }
 
     public void Start() {
+<<<<<<< HEAD
         stomachVolume = settings.MaxStomachVolume*0.5f;
         currentFeedingState = FeedingState.Normal;
+=======
+
+>>>>>>> e01b22a3fc482e5a2129a44dd6f442cfd5587fb8
     }
 
+    Vector3 calculateVcage(Vector3 currentPosition) {
+            Vcage = Vector3.zero;
+            Vector3 origo = new Vector3(0.0f, currentPosition.y, 0.0f);
+            float distance = Vector3.Distance(origo, currentPosition);
+            if (distance >= settings.FarmRadius/2-settings.PreferredCageDistance) {
+                    Vcage = - (currentPosition - origo);
+                }
+            if (currentPosition.y >= settings.FarmHeight-settings.PreferredCageDistance) {
+                Vcage += new Vector3(0, settings.FarmHeight-settings.PreferredCageDistance-currentPosition.y, 0);
+            }
+            if (currentPosition.y <= settings.PreferredCageDistance){
+                Vcage += new Vector3(0, settings.PreferredCageDistance-currentPosition.y, 0);
+            }
+            return Vcage;
+        }
     public void UpdateFish () {
 
         //Vcage
-        Vcage = Vector3.zero;
-
-        Vector3 origo = new Vector3(0.0f, transform.position.y, 0.0f);
-        
-        float distance = Vector3.Distance(origo, transform.position);
-
-        if (distance >= settings.FarmRadius/2-settings.PreferredCageDistance)
-        {
-            Vcage = - (transform.position - origo).normalized;
-        }
-
-        if (transform.position.y >= settings.FarmHeight-settings.PreferredCageDistance) {
-            Vcage += new Vector3(0, settings.FarmHeight-settings.PreferredCageDistance-transform.position.y, 0);
-        }
-        if (transform.position.y <= settings.PreferredCageDistance){
-            Vcage += new Vector3(0, settings.PreferredCageDistance-transform.position.y, 0);
-        }
+        Vector3 currentposition = transform.position;        
 
         //Feeding stuff
         FeedBehaviour(currentPosition, feedingPosition);
 
         // Light stuff
 
-        I = Izero * (float)(Math.Exp(0.07f * (transform.position.y - settings.FarmHeight)));
+        I = Izero * (float)(Math.Exp(0.07f * (currentPosition.y - settings.FarmHeight)));
 
         Vector3 VliL = Vector3.zero;
         Vector3 VliU = Vector3.zero;
@@ -151,6 +157,7 @@ public class Fish : MonoBehaviour
         {
             Vtemp += new Vector3(0, -TGy, 0) * ((settings.Tl - T) / (settings.Tl - settings.TempLowerSteep));
         }
+<<<<<<< HEAD
 
         if(currentFeedingState==FeedingState.Approach ||currentFeedingState==FeedingState.Manipulate)
         {
@@ -159,6 +166,11 @@ public class Fish : MonoBehaviour
         {
             Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
         }        
+=======
+        
+        
+        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentposition)*settings.CageWeight + Vso*settings.SocialWeight); // + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
+>>>>>>> e01b22a3fc482e5a2129a44dd6f442cfd5587fb8
         Vref = Vref.normalized;
 
         // Angle updates
@@ -166,7 +178,7 @@ public class Fish : MonoBehaviour
         Vector3 VrefHor = new Vector3(Vref.x, 0, Vref.z);
 
         float HAngle = Vector3.Angle(VprevHor, VrefHor);
-
+        
         
         float currentSpeed = (float)((rand.NextDouble() * (Speed - (Speed - 0.1))) + (Speed - 0.1));
         Vref = Vref * currentSpeed;
@@ -199,7 +211,7 @@ public class Fish : MonoBehaviour
         {
             Vprev = Quaternion.AngleAxis(HAngle - 2, Vector3.up) * Vprev;
         }
-
+        
         transform.position += Vref * Time.deltaTime;// *Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
         transform.Rotate(0, 90, 0);
@@ -277,7 +289,7 @@ public class Fish : MonoBehaviour
     float ProbFoodDetection()
     {
         return 1/(1+Vector3.Distance(feeding.transform.position, transform.position));
-    }    
+    }
 
     float ProbFeelingHungry()
     {
@@ -306,5 +318,5 @@ public class Fish : MonoBehaviour
         }else{
             return 0f;
         }
-    } 
+    }
 }
