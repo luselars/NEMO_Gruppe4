@@ -14,9 +14,9 @@ public class Cage : MonoBehaviour
         bottom.transform.localScale = new Vector3 (settings.FarmRadius, 0.0001f, settings.FarmRadius);
     }
 
-    // Update is called once per frame
+    /* Update is called once per frame
     void Update()
     {
         
-    }
+    }*/
 }
