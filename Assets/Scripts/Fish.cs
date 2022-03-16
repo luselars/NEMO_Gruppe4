@@ -85,12 +85,8 @@ public class Fish : MonoBehaviour
     }
 
     public void Start() {
-<<<<<<< HEAD
         stomachVolume = settings.MaxStomachVolume*0.5f;
         currentFeedingState = FeedingState.Normal;
-=======
-
->>>>>>> e01b22a3fc482e5a2129a44dd6f442cfd5587fb8
     }
 
     Vector3 calculateVcage(Vector3 currentPosition) {
@@ -157,7 +153,6 @@ public class Fish : MonoBehaviour
         {
             Vtemp += new Vector3(0, -TGy, 0) * ((settings.Tl - T) / (settings.Tl - settings.TempLowerSteep));
         }
-<<<<<<< HEAD
 
         if(currentFeedingState==FeedingState.Approach ||currentFeedingState==FeedingState.Manipulate)
         {
@@ -166,11 +161,6 @@ public class Fish : MonoBehaviour
         {
             Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
         }        
-=======
-        
-        
-        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentposition)*settings.CageWeight + Vso*settings.SocialWeight); // + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
->>>>>>> e01b22a3fc482e5a2129a44dd6f442cfd5587fb8
         Vref = Vref.normalized;
 
         // Angle updates
