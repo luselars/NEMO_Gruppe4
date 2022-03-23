@@ -15,20 +15,15 @@ public class Fish : MonoBehaviour
 
     [HideInInspector]
     public Vector3 currentPosition;
-    [HideInInspector]
     public Vector3 Vcage = Vector3.zero;
-    [HideInInspector]
     public Vector3 Vso = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
-    [HideInInspector]
     public Vector3 Vli = Vector3.zero;
     [HideInInspector]
     public Vector3 VliL = Vector3.zero;
     [HideInInspector]
     public Vector3 VliU = Vector3.zero;
-    [HideInInspector]
     public Vector3 Vtemp = Vector3.zero;
-    [HideInInspector]
     public Vector3 Vrand = Vector3.zero;
 
     public float Speed;
@@ -227,7 +222,7 @@ public class Fish : MonoBehaviour
         if (horizontalAngle > 2){
             Vprev = Quaternion.AngleAxis(horizontalAngle - 2, Vector3.up) * Vprev;
         }
-        }
+    }
 
     public void UpdateFish() {
         currentPosition = transform.position;
