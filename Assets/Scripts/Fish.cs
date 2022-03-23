@@ -107,7 +107,8 @@ public class Fish : MonoBehaviour
 
         float TimeSine = (float)Math.Sin((Math.PI / 12) * (settings.Time - 6));
 
-        Izero = ((settings.I_U - settings.I_L) / 2) * TimeSine + ((settings.I_U - settings.I_L) / 2) + settings.I_L;
+        Izero = ((settings.IlluminationUpperbound - settings.IlluminationLowerbound) / 2) * TimeSine +
+                ((settings.IlluminationUpperbound - settings.IlluminationLowerbound) / 2) + settings.IlluminationLowerbound;
 
         // Define bodylength
         float length_mean = 0.65f * settings.FishProgress + 0.15f;
@@ -170,15 +171,15 @@ public class Fish : MonoBehaviour
     }
 
     private Vector3 calculateVTemp(Vector3 currentPosition) {
-        TGy = -((settings.Tmax - settings.Tmin) / 25) * (float)Math.Exp((currentPosition.y - settings.FarmHeight) / 25);
-        T = settings.Tmin + ((settings.Tmax - settings.Tmin) * (float)Math.Exp((currentPosition.y - settings.FarmHeight) / 25));
+        TGy = -((settings.maximumOceanTemperature - settings.minimumOceanTemperature) / 25) * (float)Math.Exp((currentPosition.y - settings.FarmHeight) / 25);
+        T = settings.minimumOceanTemperature + ((settings.maximumOceanTemperature - settings.minimumOceanTemperature) * (float)Math.Exp((currentPosition.y - settings.FarmHeight) / 25));
 
-        if (T > settings.Tu)
+        if (T > settings.PreferredUpperTemperature)
         {
-            return new Vector3(0, TGy, 0) * ((T - settings.Tu) / (settings.TempUpperSteep - settings.Tu));
-        } else if (T < settings.Tl)
+            return new Vector3(0, TGy, 0) * ((T - settings.PreferredUpperTemperature) / (settings.TempUpperSteep - settings.PreferredUpperTemperature));
+        } else if (T < settings.PreferredLowerTemperature)
         {
-            return new Vector3(0, -TGy, 0) * ((settings.Tl - T) / (settings.Tl - settings.TempLowerSteep));
+            return new Vector3(0, -TGy, 0) * ((settings.PreferredLowerTemperature - T) / (settings.PreferredLowerTemperature - settings.TempLowerSteep));
         } else {
             return Vector3.zero;
         }
