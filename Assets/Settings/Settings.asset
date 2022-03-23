@@ -15,6 +15,9 @@ MonoBehaviour:
   FarmRadius: 20
   FarmHeight: 20
   PreferredCageDistance: 1
+  SpawnRadius: 10
+  SpawnCount: 2000
+  Time: 10
   SpawnRadius: 7
   SpawnCount: 3000
   Time: 16
@@ -25,10 +28,14 @@ MonoBehaviour:
   BodyLength: 1
   Speed: 0.9
   MaxStomachVolume: 120
+  FishProgress: 0.5
   PreferredDistance: 0.66
   DetectionDistance: 3
   DirectionchangeWeight: 0.45
-  CageWeight: 1
+  CageWeight: 0.8
+  SocialWeight: 0.45
+  LightWeight: 0.5
+  RandWeight: 0.000000001
   SocialWeight: 0.4
   LightWeight: 0.5
   TempWeight: 0.6

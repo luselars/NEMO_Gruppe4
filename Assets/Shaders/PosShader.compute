@@ -8,12 +8,14 @@ struct Fish {
     float3 direction;
     float3 Vso;
     int numDetectedFish;
+    float preferredDist;
+    float detectionDist;
 };
 
 RWStructuredBuffer<Fish> fish;
 int  numFish;
-float PreferredDist;
-float DetectionDist;
+//float PreferredDist;
+//float DetectionDist;
 
 [numthreads(threadGroupSize,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
@@ -27,14 +29,14 @@ void CSMain (uint3 id : SV_DispatchThreadID)
             //float3 offset = boidB.position - boids[id.x].position;
             //float sqrDst = offset.x * offset.x + offset.y * offset.y + offset.z * offset.z;
 
-            if (dist >= PreferredDist && dist < DetectionDist && dist > 0) {
-                    float align = (dist - DetectionDist) / (DetectionDist - PreferredDist);
+            if (dist >= fish[id.x].preferredDist && dist < fish[id.x].detectionDist && dist > 0) {
+                    float align = (dist - fish[id.x].detectionDist) / (fish[id.x].detectionDist - fish[id.x].preferredDist);
                     fish[id.x].Vso += 0.5 * align * fishB.direction;
                     fish[id.x].numDetectedFish += 1;
-                } else if (dist < PreferredDist) // makes the fish move away if too close
+                } else if (dist < fish[id.x].preferredDist) // makes the fish move away if too close
                 {
                     float3 distVector = fish[id.x].position - fishB.position;
-                    fish[id.x].Vso += distVector * 2 *(PreferredDist - dist);
+                    fish[id.x].Vso += distVector * 2 *(fish[id.x].preferredDist - dist);
                     fish[id.x].numDetectedFish += 1;
                 }
         }
