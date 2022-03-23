@@ -13,6 +13,8 @@ public class Fish : MonoBehaviour
     [HideInInspector]
     public double stdDev = 0.25;
 
+    public float fishProbHunger; // sette den inni fn
+
     //[HideInInspector]
     public Vector3 currentPosition;
     public Vector3 feedingPosition;
@@ -27,6 +29,7 @@ public class Fish : MonoBehaviour
     public Vector3 VliU = Vector3.zero;
     public Vector3 Vtemp = Vector3.zero;
     public Vector3 Vrand = Vector3.zero;
+    private Vector3 VFeeding = Vector3.zero;
 
     public float Speed;
     [HideInInspector]
@@ -86,6 +89,8 @@ public class Fish : MonoBehaviour
         this.settings = settings;
         Bodylength = settings.BodyLength;
         stomachVolume = settings.MaxStomachVolume * 0.5f;
+
+        fishProbHunger = ProbFeelingHungry2();
 
 
         // set lower bound for light as a random between set boundaries
@@ -201,7 +206,6 @@ public class Fish : MonoBehaviour
         MathNet.Numerics.Distributions.Normal normalDistZ = new MathNet.Numerics.Distributions.Normal(meanZ, stdDev);
 
         return new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
-
     }
 
     private void checkAngle(){
@@ -251,12 +255,36 @@ public class Fish : MonoBehaviour
     public void UpdateFish() {
         currentPosition = transform.position;
 
-        Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
+
+
+         if(currentFeedingState==FeedingState.Approach || currentFeedingState==FeedingState.Manipulate)
+        {
+            Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
                     (calculateVcage(currentPosition) * settings.CageWeight +
                     Vso * settings.SocialWeight +
-                    calculateVli(currentPosition) * settings.LightWeight +
-                    calculateVTemp(currentPosition) * settings.TempWeight +
+                    VFeeding*settings.FeedingWeight +
                     calculateVrand(Vprev) * settings.RandWeight);
+
+            //Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + VFeeding*settings.FeedingWeight + Vso*settings.SocialWeight + Vrand*settings.RandWeight);
+        } else
+        {
+            Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
+                    (calculateVcage(currentPosition) * settings.CageWeight +
+                    Vso * settings.SocialWeight +
+                    calculateVli(currentPosition) * settings.LightWeight * ( 1 - fishProbHunger )+
+                    calculateVTemp(currentPosition) * settings.TempWeight * ( 1 - fishProbHunger ) +
+                    calculateVrand(Vprev) * settings.RandWeight);
+        }      
+        
+/* 
+         if(currentFeedingState==FeedingState.Approach || currentFeedingState==FeedingState.Manipulate)
+        {
+            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + VFeeding*settings.FeedingWeight + Vso*settings.SocialWeight + Vrand*settings.RandWeight);
+        } else
+        {
+            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight * ( 1 - fishProbHunger ) + Vtemp*settings.TempWeight * ( 1 - fishProbHunger ) + VFeeding * settings.FeedingWeight * fishProbHunger + Vrand*settings.RandWeight);
+        }     */  
+    
         Vref = Vref.normalized;
 
         checkAngle();
@@ -267,26 +295,23 @@ public class Fish : MonoBehaviour
     }
 
     public void FeedBehaviour(Vector3 currPos, Vector3 Fpos){
-
         if(!feeding.isFeeding){
             currentFeedingState = FeedingState.Normal;
         }
         if(feeding.isFeeding)
         {
             //in Mode Normal -> Satiated
-            if(currentFeedingState==FeedingState.Normal && ProbFoodDetection() < 0.75f)
+            if(currentFeedingState==FeedingState.Normal && ProbFoodDetection(feeding.anticipateFeeding) < 0.5f)
             {
                 currentFeedingState = FeedingState.Satiated;
             }
             //in Mode Normal -> Approach            
-            else if(currentFeedingState==FeedingState.Normal && ProbFeelingHungry() > 0.75f)
-            {   
-                currentFeedingState = FeedingState.Approach;
-            }
-            //in Mode Satiated -> Approach
-            else if(currentFeedingState == FeedingState.Satiated && ProbFeelingHungry()>=0.75f)
+            else if (currentFeedingState==FeedingState.Normal && isApproach(ProbFeelingHungry2()))
             {
+                //float val = ProbFeelingHungry2();
+                //bool approach = isApproach(val);
                 currentFeedingState = FeedingState.Approach;
+                //currentFeedingState = FeedingState.Approach;
             }
             //in Mode Approach -> Manipulate
             else if(currentFeedingState == FeedingState.Approach && ProbPelletCapture()>=0.5f)
@@ -294,12 +319,12 @@ public class Fish : MonoBehaviour
                 currentFeedingState = FeedingState.Manipulate;
             }
             //in Mode Manipulate -> Approach
-            else if(currentFeedingState == FeedingState.Manipulate && ProbFeelingHungry()>=0.75f)
+            else if(currentFeedingState == FeedingState.Manipulate && ProbFeelingHungry2()>=0.75f)
             {
                 currentFeedingState = FeedingState.Approach;
             }
             //in Mode Manipulate -> Satiated
-            else if(currentFeedingState == FeedingState.Manipulate && ProbFeelingHungry()<0.75f)
+            else if(currentFeedingState == FeedingState.Manipulate && ProbFeelingHungry2()<0.75f)
             {
                 currentFeedingState = FeedingState.Satiated;
             }
@@ -334,11 +359,40 @@ public class Fish : MonoBehaviour
             }
     }
 
+    //hvis detect food og etter å regne hunger
+
+    private bool isApproach(float hunger){
+        float randValue = UnityEngine.Random.Range(1, 101) ;
+        if (randValue < hunger*100) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     //prob increases when distance to feeding area decreases
-    float ProbFoodDetection()
+    float ProbFoodDetection(bool anticipateFeed)
     {
-        return 1 / (1 + Vector3.Distance(feeding.transform.position, transform.position));
+        if(anticipateFeed){
+            return 1;
+        }else
+        {
+            float probFoodDetect =  1/(1+Vector3.Distance(feeding.transform.position, transform.position));
+            print(probFoodDetect);
+            return probFoodDetect;
+        }
+    }
+
+    public float ProbFeelingHungry2()
+    {
+        float meanHungerVar = 0.5f; //todo: user input - verdi mellom 0 og 1
+        float std = 0.1f; //todo: user input
+        float probHunger = UnityEngine.Random.Range(meanHungerVar - 3*std, meanHungerVar + 3*std ) ;
+        if(probHunger>1) probHunger = 1;
+        if(probHunger<0) probHunger = 0;      
+        
+        //fishProbHunger = probHunger;
+        return probHunger;
     }
 
     float ProbFeelingHungry()
