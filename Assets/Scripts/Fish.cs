@@ -208,32 +208,6 @@ public class Fish : MonoBehaviour
 
     }
 
-    public void UpdateFish () {
-        currentPosition = transform.position;       
-
-        //Feeding stuff
-        FeedBehaviour(currentPosition, feedingPosition);
-    
-       
-        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*
-            (calculateVcage(currentposition)*settings.CageWeight 
-            + Vso*settings.SocialWeight) + 
-            calculateVli(currentPosition) * settings.LightWeight +
-            calculateVTemp(currentPosition)
-            ; // + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
-
-        Vref = Vref.normalized;
-
-        // Angle updates
-        Vector3 VprevHor = new Vector3(Vprev.x, 0, Vprev.z);
-        Vector3 VrefHor = new Vector3(Vref.x, 0, Vref.z);
-
-        float HAngle = Vector3.Angle(VprevHor, VrefHor);
-
-        
-        
-        float currentSpeed = (float)((rand.NextDouble() * (Speed - (Speed - 0.1))) + (Speed - 0.1));
-
     private void checkAngle(){
         VprevHor = VrefHor;
         VrefHor = new Vector3(Vref.x, 0, Vref.z);
