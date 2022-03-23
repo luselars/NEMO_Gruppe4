@@ -8,7 +8,7 @@ public class Fish : MonoBehaviour
     FishSettings settings;
     Feeding feeding;
 
-    [HideInInspector]
+    //[HideInInspector]
     public Vector3 currentPosition;
 
     public Vector3 Vcage = Vector3.zero;
@@ -39,7 +39,9 @@ public class Fish : MonoBehaviour
     public float Bodylength;
     [HideInInspector]
     public float Speed;
-
+    Vector3 VprevHor = Vector3.zero;
+    Vector3 VrefHor = Vector3.zero;
+    
     private float stomachVolume;
     private float probFoodDetection;
     private Vector3 feedingPos;
@@ -83,7 +85,7 @@ public class Fish : MonoBehaviour
 
     }
 
-    Vector3 calculateVcage(Vector3 currentPosition) {
+    private Vector3 calculateVcage(Vector3 currentPosition) {
             Vcage = Vector3.zero;
             Vector3 origo = new Vector3(0.0f, currentPosition.y, 0.0f);
             float distance = Vector3.Distance(origo, currentPosition);
@@ -98,13 +100,9 @@ public class Fish : MonoBehaviour
             }
             return Vcage;
         }
-    public void UpdateFish () {
 
-        //Vcage
-        Vector3 currentposition = transform.position;        
-
-        // Light stuff
-
+    // Light stuff
+    private Vector3 calculateVli(Vector3 currentPosition){
         I = Izero * (float)(Math.Exp(0.07f * (currentPosition.y - settings.FarmHeight)));
 
         Vector3 VliL = Vector3.zero;
@@ -127,9 +125,13 @@ public class Fish : MonoBehaviour
             VliL = Vector3.zero;
         }
 
-        Vli = (VliL + VliU);
+        return Vli = (VliL + VliU);
+    }
 
+    public void UpdateFish () {
 
+        //Vcage
+        currentPosition = transform.position;        
         // Temperature stuff
 
         TGy = -((settings.Tmax - settings.Tmin) / 25) * (float)Math.Exp((transform.position.y - settings.FarmHeight) / 25);
@@ -146,12 +148,13 @@ public class Fish : MonoBehaviour
         }
         
         
-        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentposition)*settings.CageWeight + Vso*settings.SocialWeight); // + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
+        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentPosition)*settings.CageWeight +
+                    Vso*settings.SocialWeight + calculateVli(currentPosition)*settings.LightWeight + Vtemp*settings.TempWeight);
         Vref = Vref.normalized;
 
         // Angle updates
-        Vector3 VprevHor = new Vector3(Vprev.x, 0, Vprev.z);
-        Vector3 VrefHor = new Vector3(Vref.x, 0, Vref.z);
+        VprevHor = VrefHor;
+        VrefHor = new Vector3(Vref.x, 0, Vref.z);
 
         float HAngle = Vector3.Angle(VprevHor, VrefHor);
         
