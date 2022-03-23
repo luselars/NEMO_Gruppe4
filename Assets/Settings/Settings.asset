@@ -15,7 +15,7 @@ MonoBehaviour:
   FarmRadius: 20
   FarmHeight: 20
   PreferredCageDistance: 1
-  SpawnRadius: 7
+  SpawnRadius: 17
   SpawnCount: 2000
   Time: 16
   IlluminationLowerbound: 3.4
@@ -34,6 +34,7 @@ MonoBehaviour:
   LightWeight: 0.5
   RandWeight: 0.000000001
   TempWeight: 0.6
+  FeedingWeight: 0.5
   PreferredUpperTemperature: 16
   PreferredLowerTemperature: 13
   TempUpperSteep: 80

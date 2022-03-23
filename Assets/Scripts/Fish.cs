@@ -23,13 +23,13 @@ public class Fish : MonoBehaviour
     public Vector3 Vso = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
     public Vector3 Vli = Vector3.zero;
-    [HideInInspector]
+    //[HideInInspector]
     public Vector3 VliL = Vector3.zero;
-    [HideInInspector]
+    //[HideInInspector]
     public Vector3 VliU = Vector3.zero;
     public Vector3 Vtemp = Vector3.zero;
     public Vector3 Vrand = Vector3.zero;
-    private Vector3 VFeeding = Vector3.zero;
+    public Vector3 VFeeding = Vector3.zero;
 
     public float Speed;
     [HideInInspector]
@@ -48,12 +48,12 @@ public class Fish : MonoBehaviour
 
     [HideInInspector]
     public float Izero;
-    [HideInInspector]
+    //[HideInInspector]
     public float I;
     
-    [HideInInspector]
+    //[HideInInspector]
     public float TGy;
-    [HideInInspector]
+    //[HideInInspector]
     public float T;
 
     public FeedingState currentFeedingState;
@@ -187,10 +187,10 @@ public class Fish : MonoBehaviour
 
         if (T > settings.PreferredUpperTemperature)
         {
-            return new Vector3(0, TGy, 0) * ((T - settings.PreferredUpperTemperature) / (settings.TempUpperSteep - settings.PreferredUpperTemperature));
+            return Vtemp = new Vector3(0, TGy, 0) * ((T - settings.PreferredUpperTemperature) / (settings.TempUpperSteep - settings.PreferredUpperTemperature));
         } else if (T < settings.PreferredLowerTemperature)
         {
-            return new Vector3(0, -TGy, 0) * ((settings.PreferredLowerTemperature - T) / (settings.PreferredLowerTemperature - settings.TempLowerSteep));
+            return Vtemp = new Vector3(0, -TGy, 0) * ((settings.PreferredLowerTemperature - T) / (settings.PreferredLowerTemperature - settings.TempLowerSteep));
         } else {
             return Vector3.zero;
         }
@@ -205,7 +205,7 @@ public class Fish : MonoBehaviour
         MathNet.Numerics.Distributions.Normal normalDistY = new MathNet.Numerics.Distributions.Normal(meanY, stdDev);
         MathNet.Numerics.Distributions.Normal normalDistZ = new MathNet.Numerics.Distributions.Normal(meanZ, stdDev);
 
-        return new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
+        return Vrand = new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
     }
 
     private void checkAngle(){
@@ -255,35 +255,28 @@ public class Fish : MonoBehaviour
     public void UpdateFish() {
         currentPosition = transform.position;
 
-
-
-         if(currentFeedingState==FeedingState.Approach || currentFeedingState==FeedingState.Manipulate)
+        if(currentFeedingState==FeedingState.Approach || currentFeedingState==FeedingState.Manipulate)
         {
+            VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
             Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
-                    (calculateVcage(currentPosition) * settings.CageWeight +
+                   (
+                    calculateVcage(currentPosition) * settings.CageWeight +
                     Vso * settings.SocialWeight +
-                    VFeeding*settings.FeedingWeight +
+                    VFeeding * settings.FeedingWeight * fishProbHunger +
                     calculateVrand(Vprev) * settings.RandWeight);
 
-            //Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + VFeeding*settings.FeedingWeight + Vso*settings.SocialWeight + Vrand*settings.RandWeight);
         } else
         {
+            VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
             Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
-                    (calculateVcage(currentPosition) * settings.CageWeight +
+                   (
+                    calculateVcage(currentPosition) * settings.CageWeight +
                     Vso * settings.SocialWeight +
                     calculateVli(currentPosition) * settings.LightWeight * ( 1 - fishProbHunger )+
                     calculateVTemp(currentPosition) * settings.TempWeight * ( 1 - fishProbHunger ) +
+                    new Vector3(0, VFeeding.y, 0) * settings.FeedingWeight * fishProbHunger +
                     calculateVrand(Vprev) * settings.RandWeight);
         }      
-        
-/* 
-         if(currentFeedingState==FeedingState.Approach || currentFeedingState==FeedingState.Manipulate)
-        {
-            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + VFeeding*settings.FeedingWeight + Vso*settings.SocialWeight + Vrand*settings.RandWeight);
-        } else
-        {
-            Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight * ( 1 - fishProbHunger ) + Vtemp*settings.TempWeight * ( 1 - fishProbHunger ) + VFeeding * settings.FeedingWeight * fishProbHunger + Vrand*settings.RandWeight);
-        }     */  
     
         Vref = Vref.normalized;
 
@@ -334,11 +327,12 @@ public class Fish : MonoBehaviour
         {
             case FeedingState.Normal:
                 //continue normally
-                VFeeding = Vector3.zero;
+                //VFeeding = Vector3.zero;
+                //VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
                 break;
             case FeedingState.Satiated:
                 //continue normally
-                VFeeding = Vector3.zero;
+                //VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
                 break;
             case FeedingState.Approach:
                 //move towards feeding area
@@ -394,7 +388,7 @@ public class Fish : MonoBehaviour
         //fishProbHunger = probHunger;
         return probHunger;
     }
-
+/* 
     float ProbFeelingHungry()
     {
         float probFeelHunger;
@@ -411,7 +405,7 @@ public class Fish : MonoBehaviour
             probFeelHunger = 0.5f + (0.67f * (0.3f - Xnorm / 0.4f - Xnorm));
             return probFeelHunger;
         }
-    }
+    } */
 
     private float ProbPelletCapture()
     {

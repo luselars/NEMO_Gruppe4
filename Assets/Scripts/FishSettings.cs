@@ -15,8 +15,8 @@ public class FishSettings : ScriptableObject
     public int Time = 14;
     public float IlluminationLowerbound = 3.4f;
     public float IlluminationUpperbound = 76.4f;
-    public float maximumOceanTemperature;
-    public float minimumOceanTemperature;
+    public float maximumOceanTemperature = 16f;
+    public float minimumOceanTemperature = 2f;
 
     // Settings
     [Header("Fish parameters")]
@@ -36,8 +36,8 @@ public class FishSettings : ScriptableObject
     public float RandWeight;
     public float TempWeight;
     public float FeedingWeight = 0.005f;
-    public float PreferredUpperTemperature;
-    public float PreferredLowerTemperature;
+    public float PreferredUpperTemperature = 16f;
+    public float PreferredLowerTemperature = 13f;
     public float TempUpperSteep;
     public float TempLowerSteep;
 }
