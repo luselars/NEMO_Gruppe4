@@ -26,9 +26,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
             Fish fishB = fish[indexB];
             float dist = distance(fish[id.x].position, fishB.position);
 
-            //float3 offset = boidB.position - boids[id.x].position;
-            //float sqrDst = offset.x * offset.x + offset.y * offset.y + offset.z * offset.z;
-
             if (dist >= fish[id.x].preferredDist && dist < fish[id.x].detectionDist && dist > 0) {
                     float align = (dist - fish[id.x].detectionDist) / (fish[id.x].detectionDist - fish[id.x].preferredDist);
                     fish[id.x].Vso += 0.5 * align * fishB.direction;

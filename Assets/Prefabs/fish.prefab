@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 8603205425890268336}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8137442392046437857}
@@ -45,17 +45,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 764c74dc810191a4a9f4be60aeeacafe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position: {x: 0, y: 0, z: 0}
+  mean: 0
+  stdDev: 0.25
+  currentPosition: {x: 0, y: 0, z: 0}
   Vcage: {x: 0, y: 0, z: 0}
   Vso: {x: 0, y: 0, z: 0}
   Vref: {x: 0, y: 0, z: 0}
-  ck: 0.5
-  sk: 0.1
-  upperBound: 20
-  lowerBound: 1
-  radius: 23
-  time: 0
-  Length: 1
+  Vli: {x: 0, y: 0, z: 0}
+  Vtemp: {x: 0, y: 0, z: 0}
+  Vrand: {x: 0, y: 0, z: 0}
+  currentSpeed: 0
+  preferredDist: 0
+  detectionDist: 0
+  PreferredLightUpper: 0
+  PreferredLightLower: 0
+  PreferredSteepnessUpper: 0
+  PreferredSteepnessLower: 0
+  Izero: 0
+  I: 0
+  TGy: 0
+  T: 0
+  Bodylength: 0
   Speed: 0.9
 --- !u!1001 &8603205425298366986
 PrefabInstance:

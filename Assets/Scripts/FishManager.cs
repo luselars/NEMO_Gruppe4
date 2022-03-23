@@ -41,8 +41,6 @@ public class FishManager : MonoBehaviour
 
             compute.SetBuffer (0, "fish", fishBuffer);
             compute.SetInt ("numFish", fish.Length);
-           // compute.SetFloat ("PreferredDist", settings.PreferredDistance);
-           // compute.SetFloat ("DetectionDist", settings.DetectionDistance);
 
             int threadGroups = Mathf.CeilToInt (numfish / (float) threadGroupSize);
             compute.Dispatch (0, threadGroups, 1, 1);
