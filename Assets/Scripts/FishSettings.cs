@@ -7,14 +7,14 @@ public class FishSettings : ScriptableObject
 {
 
     [Header("Fish farm parameters")]
-    public float FarmRadius = 1;
-    public float FarmHeight = 3;
+    public float FarmRadius = 20;
+    public float FarmHeight = 20;
     public float PreferredCageDistance = 0.5f;
     public float SpawnRadius = 3;
-    public int SpawnCount = 1000;
+    public int SpawnCount = 7000;
     public int Time = 14;
     public float IlluminationLowerbound = 3.4f;
-    public float IlluminationUpperbound = 600.4f;
+    public float IlluminationUpperbound = 76.4f;
     public float maximumOceanTemperature;
     public float minimumOceanTemperature;
 
