@@ -184,11 +184,7 @@ public class Fish : MonoBehaviour
         }
     }
 
-
-    public void UpdateFish() {
-        currentPosition = transform.position;
-        // Random stuff
-
+    private Vector3 calculateVrand(Vector3 Vprev) {
         double meanX = Vprev.x;
         double meanY = Vprev.y;
         double meanZ = Vprev.z;
@@ -197,22 +193,18 @@ public class Fish : MonoBehaviour
         MathNet.Numerics.Distributions.Normal normalDistY = new MathNet.Numerics.Distributions.Normal(meanY, stdDev);
         MathNet.Numerics.Distributions.Normal normalDistZ = new MathNet.Numerics.Distributions.Normal(meanZ, stdDev);
 
-        Vrand = new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
+        return new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
+    }
 
-
-        Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * (calculateVcage(currentPosition) * settings.CageWeight +
-                    Vso * settings.SocialWeight + calculateVli(currentPosition) * settings.LightWeight + calculateVTemp(currentPosition) * settings.TempWeight + Vrand * settings.RandWeight);
-        Vref = Vref.normalized;
-
-        // Angle updates
+    private void checkAngle(){
         VprevHor = VrefHor;
         VrefHor = new Vector3(Vref.x, 0, Vref.z);
 
-        float HAngle = Vector3.Angle(VprevHor, VrefHor);
+        float horizontalAngle = Vector3.Angle(VprevHor, VrefHor);
 
+        //Y angle
         float maxY = Speed / 2;
-        if (Vref.y > maxY)
-        {
+        if (Vref.y > maxY) {
             float diff = Vref.y - maxY;
             float xfrac = Vref.x / (Vref.x + Vref.z);
             float zfrac = 1 - xfrac;
@@ -221,8 +213,7 @@ public class Fish : MonoBehaviour
             Vref.z += diff * zfrac;
             Vref.y = maxY;
         }
-        if (Vref.y < -maxY)
-        {
+        if (Vref.y < -maxY) {
             float diff = Vref.y + maxY;
             float xfrac = Vref.x / (Vref.x + Vref.z);
             float zfrac = 1 - xfrac;
@@ -232,10 +223,23 @@ public class Fish : MonoBehaviour
             Vref.y = -maxY;
         }
 
-        if (HAngle > 2)
-        {
-            Vprev = Quaternion.AngleAxis(HAngle - 2, Vector3.up) * Vprev;
+        if (horizontalAngle > 2){
+            Vprev = Quaternion.AngleAxis(horizontalAngle - 2, Vector3.up) * Vprev;
         }
+        }
+
+    public void UpdateFish() {
+        currentPosition = transform.position;
+
+        Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
+                    (calculateVcage(currentPosition) * settings.CageWeight +
+                    Vso * settings.SocialWeight +
+                    calculateVli(currentPosition) * settings.LightWeight +
+                    calculateVTemp(currentPosition) * settings.TempWeight +
+                    calculateVrand(Vprev) * settings.RandWeight);
+        Vref = Vref.normalized;
+
+        checkAngle();
 
         transform.position += Vref * Time.deltaTime*Speed*settings.Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
