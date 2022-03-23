@@ -19,8 +19,8 @@ MonoBehaviour:
   SpawnCount: 2000
   Time: 10
   SpawnRadius: 7
-  SpawnCount: 3000
-  Time: 16
+  SpawnCount: 2000
+  Time: 18
   I_L: 3.4
   I_U: 76.4
   Tmax: 16
