@@ -22,6 +22,7 @@ public class FishSettings : ScriptableObject {
     public float BodyLength = 1;
     public float Speed = 3;
     public float MaxStomachVolume = 120; //in grams
+    public float FishProgress;
 
     [Header ("Behaviour")]
     public float PreferredDistance = .66f;
@@ -30,6 +31,7 @@ public class FishSettings : ScriptableObject {
     public float CageWeight = 10f;
     public float SocialWeight = 0.1f;
     public float LightWeight = 0.4f;
+    public float RandWeight;
     public float TempWeight;
     public float Tu;
     public float Tl;

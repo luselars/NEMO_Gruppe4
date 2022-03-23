@@ -32,15 +32,17 @@ public class FishManager : MonoBehaviour
             for (int i = 0; i < fish.Length; i++) {
                 FishData[i].position = fish[i].transform.position;
                 FishData[i].direction = fish[i].Vref;
+                FishData[i].preferredDist = fish[i].preferredDist;
+                FishData[i].detectionDist = fish[i].detectionDist;
             }
 
-            var fishBuffer = new ComputeBuffer (numfish, sizeof (float) * 3 * 3 + sizeof (int)); //FishData.Size);
+            var fishBuffer = new ComputeBuffer (numfish, sizeof (float) * 3 * 3 + sizeof (int) + sizeof (float) + sizeof (float)); //FishData.Size);
             fishBuffer.SetData (FishData);
 
             compute.SetBuffer (0, "fish", fishBuffer);
             compute.SetInt ("numFish", fish.Length);
-            compute.SetFloat ("PreferredDist", settings.PreferredDistance);
-            compute.SetFloat ("DetectionDist", settings.DetectionDistance);
+           // compute.SetFloat ("PreferredDist", settings.PreferredDistance);
+           // compute.SetFloat ("DetectionDist", settings.DetectionDistance);
 
             int threadGroups = Mathf.CeilToInt (numfish / (float) threadGroupSize);
             compute.Dispatch (0, threadGroups, 1, 1);
@@ -63,5 +65,7 @@ public class FishManager : MonoBehaviour
         public Vector3 direction;
         public Vector3 Vso;
         public int numDetectedFish;
+        public float preferredDist;
+        public float detectionDist;
     }
 }
