@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using MathNet.Numerics;
 
 public class Fish : MonoBehaviour
 {
     FishSettings settings;
     Feeding feeding;
+    public double mean;
+    public double stdDev = 0.25;
 
     //[HideInInspector]
     public Vector3 currentPosition;
@@ -16,6 +19,12 @@ public class Fish : MonoBehaviour
     public Vector3 Vref = Vector3.zero;
     public Vector3 Vli = Vector3.zero;
     public Vector3 Vtemp = Vector3.zero;
+    public Vector3 Vrand = Vector3.zero;
+
+    public float currentSpeed;
+
+    public float preferredDist;
+    public float detectionDist;
 
     public float PreferredLightUpper;
     public float PreferredLightLower;
@@ -35,7 +44,6 @@ public class Fish : MonoBehaviour
 
     // Cached
     Material material;
-    [HideInInspector]
     public float Bodylength;
     [HideInInspector]
     public float Speed;
@@ -78,7 +86,32 @@ public class Fish : MonoBehaviour
         lower = 406;
         PreferredSteepnessUpper = (float)((rand.NextDouble() * (upper - lower)) + (lower));
 
-        Izero = ((settings.I_U - settings.I_L) / 2) * (float)Math.Sin((Math.PI / 12) * (settings.Time - 6)) + ((settings.I_U - settings.I_L) / 2) + settings.I_L;
+        float TimeSine = (float)Math.Sin((Math.PI / 12) * (settings.Time - 6));
+
+        Izero = ((settings.I_U - settings.I_L) / 2) * TimeSine + ((settings.I_U - settings.I_L) / 2) + settings.I_L;
+
+        // Define bodylength
+        float length_mean = 0.65f * settings.FishProgress + 0.15f;
+
+        double upperLength = length_mean + 0.07;
+        double lowerLength = length_mean - 0.07;
+
+        Bodylength = (float)((rand.NextDouble() * (upperLength - lowerLength)) + (lowerLength));
+
+        detectionDist = 3f * Bodylength;
+        preferredDist = 0.66f * Bodylength; 
+
+        double upperSpeed = 0.65;
+        double lowerSpeed = 0.45;
+
+        transform.localScale = transform.localScale * Bodylength;
+
+        currentSpeed = Bodylength * (float)((rand.NextDouble() * (upperSpeed - lowerSpeed)) + (lowerSpeed));
+
+        if(TimeSine < 0)
+        {
+            currentSpeed = currentSpeed / 2;
+        }
     }
 
     public void Start() {
@@ -146,6 +179,23 @@ public class Fish : MonoBehaviour
         {
             Vtemp += new Vector3(0, -TGy, 0) * ((settings.Tl - T) / (settings.Tl - settings.TempLowerSteep));
         }
+        //Vtemp = Vtemp.normalized;
+        // Random stuff
+
+        double meanX = Vprev.x;
+        double meanY = Vprev.y;
+        double meanZ = Vprev.z;
+
+        MathNet.Numerics.Distributions.Normal normalDistX = new MathNet.Numerics.Distributions.Normal(meanX, stdDev);
+        MathNet.Numerics.Distributions.Normal normalDistY = new MathNet.Numerics.Distributions.Normal(meanY, stdDev);
+        MathNet.Numerics.Distributions.Normal normalDistZ = new MathNet.Numerics.Distributions.Normal(meanZ, stdDev);
+
+        Vrand = new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
+
+        //Vso = Vso.normalized;
+
+        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(Vcage*settings.CageWeight + Vso*settings.SocialWeight + Vli*settings.LightWeight + Vtemp*settings.TempWeight + Vrand*settings.RandWeight);
+
         
         
         Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentPosition)*settings.CageWeight +
@@ -157,9 +207,11 @@ public class Fish : MonoBehaviour
         VrefHor = new Vector3(Vref.x, 0, Vref.z);
 
         float HAngle = Vector3.Angle(VprevHor, VrefHor);
+
         
         
         float currentSpeed = (float)((rand.NextDouble() * (Speed - (Speed - 0.1))) + (Speed - 0.1));
+
         Vref = Vref * currentSpeed;
 
 
@@ -184,7 +236,6 @@ public class Fish : MonoBehaviour
             Vref.z += diff * zfrac;
             Vref.y = -maxY;
         }
-
 
         if (HAngle > 2)
         {
