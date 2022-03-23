@@ -9,9 +9,12 @@ public class Cage : MonoBehaviour
     public GameObject bottom;
     void Start()
     {
-        farm.transform.localScale = new Vector3 (settings.FarmRadius, settings.FarmHeight/2, settings.FarmRadius);
+        farm.transform.localScale = new Vector3 (settings.FarmRadius*2, settings.FarmHeight/2, settings.FarmRadius*2);
         farm.transform.position = new Vector3(0, settings.FarmHeight/2, 0);
         bottom.transform.localScale = new Vector3 (settings.FarmRadius, 0.0001f, settings.FarmRadius);
+
+        //print(GameObject.FindGameObjectsWithTag("CageWalls")[0].GetComponent<MeshRenderer>().bounds.size.y);
+        //transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().bounds.size.y);
     }
 
     /* Update is called once per frame

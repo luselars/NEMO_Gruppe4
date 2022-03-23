@@ -104,6 +104,8 @@ public class Fish : MonoBehaviour
 
         transform.localScale = transform.localScale * Bodylength;
 
+        //print(transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().bounds.size.x + ", " + transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().bounds.size.z);
+
         currentSpeed = Bodylength * (float)((rand.NextDouble() * (upperSpeed - lowerSpeed)) + (lowerSpeed));
 
         if(TimeSine < 0)
@@ -120,7 +122,7 @@ public class Fish : MonoBehaviour
             Vcage = Vector3.zero;
             Vector3 origo = new Vector3(0.0f, currentPosition.y, 0.0f);
             float distance = Vector3.Distance(origo, currentPosition);
-            if (distance >= settings.FarmRadius/2-settings.PreferredCageDistance) {
+            if (distance >= settings.FarmRadius-settings.PreferredCageDistance) {
                     Vcage = - (currentPosition - origo);
                 }
             if (currentPosition.y >= settings.FarmHeight-settings.PreferredCageDistance) {
@@ -140,10 +142,10 @@ public class Fish : MonoBehaviour
         
         float distance = Vector3.Distance(origo, transform.position);
 
-        if (distance >= (settings.FarmRadius/2)-settings.PreferredCageDistance)
+        if (distance >= (settings.FarmRadius)-settings.PreferredCageDistance)
         {
 
-            Vcage -= (transform.position - origo).normalized * (distance - (settings.FarmRadius/2 - settings.PreferredCageDistance));
+            Vcage -= (transform.position - origo).normalized * (distance - (settings.FarmRadius - settings.PreferredCageDistance));
         }
 
         if (transform.position.y >= settings.FarmHeight-settings.PreferredCageDistance) {
@@ -216,7 +218,7 @@ public class Fish : MonoBehaviour
 
         
         
-        Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentposition)*settings.CageWeight + Vso*settings.SocialWeight); // + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
+        //Vref = Vprev*settings.DirectionchangeWeight + (1.0f-settings.DirectionchangeWeight)*(calculateVcage(currentposition)*settings.CageWeight + Vso*settings.SocialWeight); // + Vli*settings.LightWeight + Vtemp*settings.TempWeight);
 
         Vref = Vref.normalized;
 
