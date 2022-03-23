@@ -16,11 +16,8 @@ MonoBehaviour:
   FarmHeight: 20
   PreferredCageDistance: 1
   SpawnRadius: 10
-  SpawnCount: 2000
+  SpawnCount: 10000
   Time: 10
-  SpawnRadius: 7
-  SpawnCount: 2000
-  Time: 18
   I_L: 3.4
   I_U: 76.4
   Tmax: 16
@@ -36,8 +33,6 @@ MonoBehaviour:
   SocialWeight: 0.45
   LightWeight: 0.5
   RandWeight: 0.000000001
-  SocialWeight: 0.4
-  LightWeight: 0.5
   TempWeight: 0.6
   Tu: 16
   Tl: 13

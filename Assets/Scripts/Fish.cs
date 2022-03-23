@@ -8,34 +8,52 @@ public class Fish : MonoBehaviour
 {
     FishSettings settings;
     Feeding feeding;
+    [HideInInspector]
     public double mean;
+    [HideInInspector]
     public double stdDev = 0.25;
 
-    //[HideInInspector]
+    [HideInInspector]
     public Vector3 currentPosition;
-
+    [HideInInspector]
     public Vector3 Vcage = Vector3.zero;
+    [HideInInspector]
     public Vector3 Vso = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
+    [HideInInspector]
     public Vector3 Vli = Vector3.zero;
+    [HideInInspector]
+    public Vector3 VliL = Vector3.zero;
+    [HideInInspector]
+    public Vector3 VliU = Vector3.zero;
+    [HideInInspector]
     public Vector3 Vtemp = Vector3.zero;
+    [HideInInspector]
     public Vector3 Vrand = Vector3.zero;
 
-    public float currentSpeed;
-
+    public float Speed;
+    [HideInInspector]
     public float preferredDist;
+    [HideInInspector]
     public float detectionDist;
-
+    [HideInInspector]
     public float PreferredLightUpper;
+    [HideInInspector]
     public float PreferredLightLower;
 
+    [HideInInspector]
     public float PreferredSteepnessUpper;
+    [HideInInspector]
     public float PreferredSteepnessLower;
 
+    [HideInInspector]
     public float Izero;
+    [HideInInspector]
     public float I;
-
+    
+    [HideInInspector]
     public float TGy;
+    [HideInInspector]
     public float T;
 
     [HideInInspector]
@@ -46,8 +64,8 @@ public class Fish : MonoBehaviour
     Material material;
     public float Bodylength;
     [HideInInspector]
-    public float Speed;
     Vector3 VprevHor = Vector3.zero;
+    [HideInInspector]
     Vector3 VrefHor = Vector3.zero;
 
     private float stomachVolume;
@@ -66,7 +84,6 @@ public class Fish : MonoBehaviour
     public void Initialize(FishSettings settings)
     {
         this.settings = settings;
-        Speed = settings.Speed;
         Bodylength = settings.BodyLength;
         stomachVolume = settings.MaxStomachVolume * 0.5f;
 
@@ -108,87 +125,68 @@ public class Fish : MonoBehaviour
 
         transform.localScale = transform.localScale * Bodylength;
 
-        currentSpeed = Bodylength * (float)((rand.NextDouble() * (upperSpeed - lowerSpeed)) + (lowerSpeed));
+        Speed = Bodylength * (float)((rand.NextDouble() * (upperSpeed - lowerSpeed)) + (lowerSpeed));
 
         if (TimeSine < 0)
         {
-            currentSpeed = currentSpeed / 2;
+            Speed = Speed / 2;
         }
     }
 
-    public void Start()
-    {
-
-    }
-
-    private Vector3 calculateVcage(Vector3 currentPosition)
-    {
+    private Vector3 calculateVcage(Vector3 currentPosition) {
         Vcage = Vector3.zero;
         Vector3 origo = new Vector3(0.0f, currentPosition.y, 0.0f);
         float distance = Vector3.Distance(origo, currentPosition);
-        if (distance >= settings.FarmRadius - settings.PreferredCageDistance)
-        {
-            Vcage = -(currentPosition - origo);
+        if (distance >= settings.FarmRadius - settings.PreferredCageDistance) {
+            Vcage -= (currentPosition - origo).normalized * (distance - (settings.FarmRadius - settings.PreferredCageDistance));
         }
-        if (currentPosition.y >= settings.FarmHeight - settings.PreferredCageDistance)
-        {
+        if (currentPosition.y >= settings.FarmHeight - settings.PreferredCageDistance) {
             Vcage += new Vector3(0, settings.FarmHeight - settings.PreferredCageDistance - currentPosition.y, 0);
         }
-        if (currentPosition.y <= settings.PreferredCageDistance)
-        {
+        if (currentPosition.y <= settings.PreferredCageDistance) {
             Vcage += new Vector3(0, settings.PreferredCageDistance - currentPosition.y, 0);
         }
         return Vcage;
     }
 
     // Light stuff
-    private Vector3 calculateVli(Vector3 currentPosition)
-    {
+    private Vector3 calculateVli(Vector3 currentPosition) {
         I = Izero * (float)(Math.Exp(0.07f * (currentPosition.y - settings.FarmHeight)));
 
-        Vector3 VliL = Vector3.zero;
-        Vector3 VliU = Vector3.zero;
-
-        if (PreferredLightUpper < I)
-        {
+        if (PreferredLightUpper < I) {
             VliU = new Vector3(0, -1, 0) * ((I - PreferredLightUpper) / (PreferredSteepnessUpper - PreferredLightUpper));
         }
-        else
-        {
+        else {
             VliU = Vector3.zero;
         }
-        if (PreferredLightLower > I)
-        {
+        if (PreferredLightLower > I) {
             VliL = new Vector3(0, 1, 0) * ((PreferredLightLower - I) / (PreferredLightLower - PreferredSteepnessLower));
         }
-        else
-        {
+        else{
             VliL = Vector3.zero;
         }
 
         return Vli = (VliL + VliU);
     }
 
-    public void UpdateFish()
-    {
-
-        //Vcage
-        currentPosition = transform.position;
-        // Temperature stuff
-
-        TGy = -((settings.Tmax - settings.Tmin) / 25) * (float)Math.Exp((transform.position.y - settings.FarmHeight) / 25);
-        Vtemp = Vector3.zero;
-        T = settings.Tmin + ((settings.Tmax - settings.Tmin) * (float)Math.Exp((transform.position.y - settings.FarmHeight) / 25));
+    private Vector3 calculateVTemp(Vector3 currentPosition) {
+        TGy = -((settings.Tmax - settings.Tmin) / 25) * (float)Math.Exp((currentPosition.y - settings.FarmHeight) / 25);
+        T = settings.Tmin + ((settings.Tmax - settings.Tmin) * (float)Math.Exp((currentPosition.y - settings.FarmHeight) / 25));
 
         if (T > settings.Tu)
         {
-            Vtemp += new Vector3(0, TGy, 0) * ((T - settings.Tu) / (settings.TempUpperSteep - settings.Tu));
-        }
-        if (T < settings.Tl)
+            return new Vector3(0, TGy, 0) * ((T - settings.Tu) / (settings.TempUpperSteep - settings.Tu));
+        } else if (T < settings.Tl)
         {
-            Vtemp += new Vector3(0, -TGy, 0) * ((settings.Tl - T) / (settings.Tl - settings.TempLowerSteep));
+            return new Vector3(0, -TGy, 0) * ((settings.Tl - T) / (settings.Tl - settings.TempLowerSteep));
+        } else {
+            return Vector3.zero;
         }
-        //Vtemp = Vtemp.normalized;
+    }
+
+
+    public void UpdateFish() {
+        currentPosition = transform.position;
         // Random stuff
 
         double meanX = Vprev.x;
@@ -201,14 +199,9 @@ public class Fish : MonoBehaviour
 
         Vrand = new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
 
-        //Vso = Vso.normalized;
-
-        //Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * (Vcage * settings.CageWeight + Vso * settings.SocialWeight + Vli * settings.LightWeight + Vtemp * settings.TempWeight + Vrand * settings.RandWeight);
-
-
 
         Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * (calculateVcage(currentPosition) * settings.CageWeight +
-                    Vso * settings.SocialWeight + calculateVli(currentPosition) * settings.LightWeight + Vtemp * settings.TempWeight + Vrand * settings.RandWeight);
+                    Vso * settings.SocialWeight + calculateVli(currentPosition) * settings.LightWeight + calculateVTemp(currentPosition) * settings.TempWeight + Vrand * settings.RandWeight);
         Vref = Vref.normalized;
 
         // Angle updates
@@ -217,14 +210,7 @@ public class Fish : MonoBehaviour
 
         float HAngle = Vector3.Angle(VprevHor, VrefHor);
 
-
-
-        float currentSpeed = (float)((rand.NextDouble() * (Speed - (Speed - 0.1))) + (Speed - 0.1));
-
-        Vref = Vref * currentSpeed;
-
-
-        float maxY = currentSpeed / 2;
+        float maxY = Speed / 2;
         if (Vref.y > maxY)
         {
             float diff = Vref.y - maxY;
@@ -251,7 +237,7 @@ public class Fish : MonoBehaviour
             Vprev = Quaternion.AngleAxis(HAngle - 2, Vector3.up) * Vprev;
         }
 
-        transform.position += Vref * Time.deltaTime;// *Speed;
+        transform.position += Vref * Time.deltaTime*Speed*settings.Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
         transform.Rotate(0, 90, 0);
         Vprev = Vref;
