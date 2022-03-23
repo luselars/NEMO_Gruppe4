@@ -13,10 +13,10 @@ public class FishSettings : ScriptableObject
     public float SpawnRadius = 3;
     public int SpawnCount = 1000;
     public int Time = 14;
-    public float I_L = 3.4f;
-    public float I_U = 600.4f;
-    public float Tmax;
-    public float Tmin;
+    public float IlluminationLowerbound = 3.4f;
+    public float IlluminationUpperbound = 600.4f;
+    public float maximumOceanTemperature;
+    public float minimumOceanTemperature;
 
     // Settings
     [Header("Fish parameters")]
@@ -36,8 +36,8 @@ public class FishSettings : ScriptableObject
     public float RandWeight;
     public float TempWeight;
     public float FeedingWeight = 0.005f;
-    public float Tu;
-    public float Tl;
+    public float PreferredUpperTemperature;
+    public float PreferredLowerTemperature;
     public float TempUpperSteep;
     public float TempLowerSteep;
 }
