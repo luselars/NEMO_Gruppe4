@@ -15,13 +15,13 @@ MonoBehaviour:
   FarmRadius: 20
   FarmHeight: 20
   PreferredCageDistance: 1
-  SpawnRadius: 10
-  SpawnCount: 10000
-  Time: 10
-  I_L: 3.4
-  I_U: 76.4
-  Tmax: 16
-  Tmin: 2
+  SpawnRadius: 7
+  SpawnCount: 2000
+  Time: 16
+  IlluminationLowerbound: 3.4
+  IlluminationUpperbound: 76.4
+  maximumOceanTemperature: 16
+  minimumOceanTemperature: 2
   BodyLength: 1
   Speed: 0.9
   MaxStomachVolume: 120
@@ -34,7 +34,7 @@ MonoBehaviour:
   LightWeight: 0.5
   RandWeight: 0.000000001
   TempWeight: 0.6
-  Tu: 16
-  Tl: 13
+  PreferredUpperTemperature: 16
+  PreferredLowerTemperature: 13
   TempUpperSteep: 80
   TempLowerSteep: -20
