@@ -194,7 +194,9 @@ public class Fish : MonoBehaviour
 
     private void checkAngle(){
         VprevHor = VrefHor;
-        VrefHor = new Vector3(Vref.x, 0, Vref.z);
+        //VrefHor = new Vector3(Vref.x, 0, Vref.z);
+        VrefHor.x = Vref.x;
+        VrefHor.z = Vref.z;
 
         float horizontalAngle = Vector3.SignedAngle(VprevHor, VrefHor, Vector3.up);
 
@@ -223,14 +225,14 @@ public class Fish : MonoBehaviour
 
         if (horizontalAngle > maxAngle)
         {
-
             Vref = Quaternion.AngleAxis(maxAngle - horizontalAngle, Vector3.up) * Vref;
         }else if(horizontalAngle < -maxAngle)
         {
             //print(horizontalAngle+ " " + Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up));
             Vref = Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up) * Vref;
         }
-
+        VrefHor.x = Vref.x;
+        VrefHor.z = Vref.z;
     }
 
     public void UpdateFish() {
