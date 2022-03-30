@@ -223,12 +223,14 @@ public class Fish : MonoBehaviour
 
         if (horizontalAngle > maxAngle)
         {
-
             Vref = Quaternion.AngleAxis(maxAngle - horizontalAngle, Vector3.up) * Vref;
         }else if(horizontalAngle < -maxAngle)
         {
-            print(horizontalAngle+ " " + (-maxAngle-horizontalAngle));
+            print(VprevHor);
+            print(VrefHor);
+            print(horizontalAngle+ " " + maxAngle);
             Vref = Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up) * Vref;
+            print(Vref);
         }
 
     }
