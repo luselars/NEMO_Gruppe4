@@ -13,7 +13,13 @@ public class Fish : MonoBehaviour
     [HideInInspector]
     public double stdDev = 0.25;
 
-    //[HideInInspector]
+    public float fishProbHunger; 
+    public float fishProbFoodDetect; 
+    public float fishProbPelletCapture; 
+    public bool isFishInsideFeedingRadius;
+    public float randTimer;
+
+    [HideInInspector]
     public Vector3 currentPosition;
     public Vector3 feedingPosition;
 
@@ -27,6 +33,7 @@ public class Fish : MonoBehaviour
     public Vector3 VliU = Vector3.zero;
     public Vector3 Vtemp = Vector3.zero;
     public Vector3 Vrand = Vector3.zero;
+    public Vector3 VFeeding = Vector3.zero;
 
     public float Speed;
     [HideInInspector]
@@ -86,6 +93,9 @@ public class Fish : MonoBehaviour
         this.settings = settings;
         Bodylength = settings.BodyLength;
         stomachVolume = settings.MaxStomachVolume * 0.5f;
+
+        fishProbHunger = ProbFeelingHungry2();
+        randTimer = UnityEngine.Random.Range(5f, 30f);
 
 
         // set lower bound for light as a random between set boundaries
@@ -182,10 +192,10 @@ public class Fish : MonoBehaviour
 
         if (T > settings.PreferredUpperTemperature)
         {
-            return new Vector3(0, TGy, 0) * ((T - settings.PreferredUpperTemperature) / (settings.TempUpperSteep - settings.PreferredUpperTemperature));
+            return Vtemp = new Vector3(0, TGy, 0) * ((T - settings.PreferredUpperTemperature) / (settings.TempUpperSteep - settings.PreferredUpperTemperature));
         } else if (T < settings.PreferredLowerTemperature)
         {
-            return new Vector3(0, -TGy, 0) * ((settings.PreferredLowerTemperature - T) / (settings.PreferredLowerTemperature - settings.TempLowerSteep));
+            return Vtemp = new Vector3(0, -TGy, 0) * ((settings.PreferredLowerTemperature - T) / (settings.PreferredLowerTemperature - settings.TempLowerSteep));
         } else {
             return Vector3.zero;
         }
@@ -200,8 +210,7 @@ public class Fish : MonoBehaviour
         MathNet.Numerics.Distributions.Normal normalDistY = new MathNet.Numerics.Distributions.Normal(meanY, stdDev);
         MathNet.Numerics.Distributions.Normal normalDistZ = new MathNet.Numerics.Distributions.Normal(meanZ, stdDev);
 
-        return new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
-
+        return Vrand = new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
     }
 
     private void checkAngle(){
@@ -250,13 +259,51 @@ public class Fish : MonoBehaviour
 
     public void UpdateFish() {
         currentPosition = transform.position;
+        FeedBehaviour(currentPosition, feedingPosition);
 
-        Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
-                    (calculateVcage(currentPosition) * settings.CageWeight +
+        if(currentFeedingState==FeedingState.Approach)
+        {
+            VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
+            Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
+                   (
+                    calculateVcage(currentPosition) * settings.CageWeight +
                     Vso * settings.SocialWeight +
-                    calculateVli(currentPosition) * settings.LightWeight +
-                    calculateVTemp(currentPosition) * settings.TempWeight +
-                    calculateVrand(Vprev) * settings.RandWeight);
+                    VFeeding * settings.FeedingWeight * fishProbHunger +
+                    calculateVrand(Vprev) * settings.RandWeight
+                    );
+
+            ProbPelletCapture();
+        } else if(currentFeedingState==FeedingState.Manipulate )
+        {
+            VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
+            Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
+                   (
+                    calculateVcage(currentPosition) * settings.CageWeight +
+                    Vso * settings.SocialWeight +
+                    VFeeding * settings.FeedingWeight * fishProbHunger +
+                    calculateVrand(Vprev) * settings.RandWeight
+                    );
+           
+            if(randTimer>0.0f){
+                currentFeedingState = FeedingState.Manipulate;
+                randTimer -= Time.deltaTime;
+            } else{
+                fishProbHunger = ProbFeelingHungry2();
+            }
+        } else if (currentFeedingState==FeedingState.Normal || currentFeedingState==FeedingState.Satiated)
+        {
+            VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
+            Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
+                   (
+                    calculateVcage(currentPosition) * settings.CageWeight +
+                    Vso * settings.SocialWeight +
+                    calculateVli(currentPosition) * settings.LightWeight * ( 1 - fishProbHunger )+
+                    calculateVTemp(currentPosition) * settings.TempWeight * ( 1 - fishProbHunger ) +
+                    new Vector3(0, VFeeding.y, 0) * settings.FeedingWeight * fishProbHunger +
+                    calculateVrand(Vprev) * settings.RandWeight
+                    );
+        }      
+    
         Vref = Vref.normalized;
 
         checkAngle();
@@ -267,112 +314,75 @@ public class Fish : MonoBehaviour
     }
 
     public void FeedBehaviour(Vector3 currPos, Vector3 Fpos){
-
         if(!feeding.isFeeding){
-            currentFeedingState = FeedingState.Normal;
+            currentFeedingState = FeedingState.Normal; 
+            fishProbHunger = ProbFeelingHungry2();
+            randTimer = UnityEngine.Random.Range(5f, 30f);
         }
         if(feeding.isFeeding)
         {
-            //in Mode Normal -> Satiated
-            if(currentFeedingState==FeedingState.Normal && ProbFoodDetection() < 0.75f)
-            {
+            if((fishProbHunger*ProbFoodDetection(feeding.anticipateFeeding))<0.5f){
                 currentFeedingState = FeedingState.Satiated;
-            }
-            //in Mode Normal -> Approach            
-            else if(currentFeedingState==FeedingState.Normal && ProbFeelingHungry() > 0.75f)
-            {   
+            }else if (currentFeedingState!=FeedingState.Satiated && (fishProbHunger*ProbFoodDetection(feeding.anticipateFeeding))>=0.5f){
                 currentFeedingState = FeedingState.Approach;
-            }
-            //in Mode Satiated -> Approach
-            else if(currentFeedingState == FeedingState.Satiated && ProbFeelingHungry()>=0.75f)
-            {
-                currentFeedingState = FeedingState.Approach;
-            }
-            //in Mode Approach -> Manipulate
-            else if(currentFeedingState == FeedingState.Approach && ProbPelletCapture()>=0.5f)
-            {
-                currentFeedingState = FeedingState.Manipulate;
-            }
-            //in Mode Manipulate -> Approach
-            else if(currentFeedingState == FeedingState.Manipulate && ProbFeelingHungry()>=0.75f)
-            {
-                currentFeedingState = FeedingState.Approach;
-            }
-            //in Mode Manipulate -> Satiated
-            else if(currentFeedingState == FeedingState.Manipulate && ProbFeelingHungry()<0.75f)
-            {
-                currentFeedingState = FeedingState.Satiated;
+            } else if (fishProbHunger>0.5f && randTimer>0.0f)
+            {   currentFeedingState= FeedingState.Manipulate;
             }
         } 
 
         switch(currentFeedingState)
         {
             case FeedingState.Normal:
-                //continue normally
-                VFeeding = Vector3.zero;
                 break;
             case FeedingState.Satiated:
-                //continue normally
-                VFeeding = Vector3.zero;
                 break;
-            case FeedingState.Approach:
-                //move towards feeding area
-                //disregard vert axis by temp & light
-                VFeeding = feedingPosition - currentPosition;
+            case FeedingState.Approach: //move towards feeding area
+                if(fishProbPelletCapture > 0.5f) currentFeedingState = FeedingState.Manipulate;
                 break;
             case FeedingState.Manipulate:
-                //if pellet capture success -> hold manipulate for between 5-30 sec
-                //during manipulate the fish don't respond to temp&light
-                //evaluate hunger status after pellet consumption
-                VFeeding = Vector3.zero;
-                float randTimer = UnityEngine.Random.Range(5f, 30f);
-                randTimer -= Time.deltaTime;
-                if(randTimer<0.0f){
-                    currentFeedingState=FeedingState.Manipulate;
-                }           
+                if(fishProbHunger<0.5f) currentFeedingState = FeedingState.Satiated;
+                else if(fishProbHunger>0.5f && !(randTimer > 0.0f)) currentFeedingState = FeedingState.Approach;
                 break;
             }
     }
 
-
     //prob increases when distance to feeding area decreases
-    float ProbFoodDetection()
+    //prob is 1 if anticipateFeed is true
+    float ProbFoodDetection(bool anticipateFeed)
     {
-        return 1 / (1 + Vector3.Distance(feeding.transform.position, transform.position));
+        if(anticipateFeed){
+            return fishProbFoodDetect = 1;
+        }else
+        {
+            float probFoodDetect =  1/(1+Vector3.Distance(feeding.transform.position, transform.position));
+            return fishProbFoodDetect = probFoodDetect;
+        }
     }
 
-    float ProbFeelingHungry()
+    //settes når programmet starter og igjen når timeren i Manipulate state blir 0
+    public float ProbFeelingHungry2()
     {
-        float probFeelHunger;
-        float rand = UnityEngine.Random.Range(0.0096f, 120f);
-        float Xnorm = (rand - 0.0096f) / (120f - 0.0096f); // normalised stomach volume
-
-        if (Xnorm >= 0.3)
-        {
-            probFeelHunger = 0.5f - (0.57f * (Xnorm - 0.3f / Xnorm - 0.2f));
-            return probFeelHunger;
-        }
-        else
-        {
-            probFeelHunger = 0.5f + (0.67f * (0.3f - Xnorm / 0.4f - Xnorm));
-            return probFeelHunger;
-        }
+        float meanHungerVar = 0.5f; //todo: user input - verdi mellom 0 og 1
+        float std = 0.1f; //todo: user input
+        float probHunger = UnityEngine.Random.Range(meanHungerVar - 3*std, meanHungerVar + 3*std ) ;
+        if(probHunger>1) probHunger = 1;
+        if(probHunger<0) probHunger = 0;      
+        
+        return probHunger;
     }
 
     private float ProbPelletCapture()
     {
-        Vector3 xzFeedingPos = new Vector3(feeding.transform.position.x, transform.position.y, feeding.transform.position.z);
-        float radius = feeding.transform.localScale.x / 10f;
-        bool isFishInsideFeedingRadius = Vector3.Distance(xzFeedingPos, transform.position) < radius;
+        Vector3 xzFeedingPos = new Vector3(feedingPosition.x+1, currentPosition.y, feedingPosition.z+1);
+        float radius = feeding.transform.localScale.x; // /10f
+        isFishInsideFeedingRadius = Vector3.Distance(xzFeedingPos, transform.position) < radius;
 
+        float randValue = UnityEngine.Random.Range(1, 101) ;
         if (isFishInsideFeedingRadius)
         {
-            float probPelletCapture = 0.05f / Mathf.Pow(1 + Vector3.Distance(feedingPos, transform.position), 3f);
-            return probPelletCapture;
-        }
-        else
-        {
-            return 0f;
+            return fishProbPelletCapture = randValue/100;
+        }else {
+            return fishProbPelletCapture = 0f;
         }
     }
 }
