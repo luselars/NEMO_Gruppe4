@@ -316,6 +316,7 @@ public class Fish : MonoBehaviour
     public void FeedBehaviour(Vector3 currPos, Vector3 Fpos){
         if(!feeding.isFeeding){
             currentFeedingState = FeedingState.Normal; 
+            if(fishProbHunger>0.05f && randTimer<0.0f) fishProbHunger = ProbFeelingHungry2();
             if(randTimer<0.0f) randTimer = UnityEngine.Random.Range(5f, 30f);
         }
         if(feeding.isFeeding)
@@ -334,7 +335,6 @@ public class Fish : MonoBehaviour
             case FeedingState.Normal:
                 break;
             case FeedingState.Satiated:
-                fishProbHunger = ProbFeelingHungry2();
                 break;
             case FeedingState.Approach: //move towards feeding area
                 if(fishProbPelletCapture > 0.5f) currentFeedingState = FeedingState.Manipulate;
