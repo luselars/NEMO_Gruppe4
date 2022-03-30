@@ -226,9 +226,7 @@ public class Fish : MonoBehaviour
             Vref = Quaternion.AngleAxis(maxAngle - horizontalAngle, Vector3.up) * Vref;
         }else if(horizontalAngle < -maxAngle)
         {
-            print(VprevHor);
-            print(VrefHor);
-            print(horizontalAngle+ " " + maxAngle);
+            //print(horizontalAngle+ " " + Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up));
             Vref = Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up) * Vref;
             print(Vref);
         }
@@ -250,7 +248,6 @@ public class Fish : MonoBehaviour
 
         transform.position += Vref * Time.deltaTime*Speed*settings.Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
-        transform.Rotate(0, 90, 0);
         Vprev = Vref;
     }
 
