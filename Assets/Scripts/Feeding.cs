@@ -5,6 +5,7 @@ using UnityEngine;
 public class Feeding : MonoBehaviour
 {
     public bool isFeeding = false;
+    public bool anticipateFeeding = false;
     public GameObject feeding;
     public FishSettings settings;
 
