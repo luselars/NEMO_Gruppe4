@@ -18,18 +18,14 @@ public class Fish : MonoBehaviour
     public Vector3 feedingPosition;
 
     public Vector3 Vcage = Vector3.zero;
-    [HideInInspector]
     public Vector3 Vso = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
-    [HideInInspector]
     public Vector3 Vli = Vector3.zero;
     [HideInInspector]
     public Vector3 VliL = Vector3.zero;
     [HideInInspector]
     public Vector3 VliU = Vector3.zero;
-    [HideInInspector]
     public Vector3 Vtemp = Vector3.zero;
-    [HideInInspector]
     public Vector3 Vrand = Vector3.zero;
 
     public float Speed;
@@ -210,9 +206,11 @@ public class Fish : MonoBehaviour
 
     private void checkAngle(){
         VprevHor = VrefHor;
-        VrefHor = new Vector3(Vref.x, 0, Vref.z);
+        //VrefHor = new Vector3(Vref.x, 0, Vref.z);
+        VrefHor.x = Vref.x;
+        VrefHor.z = Vref.z;
 
-        float horizontalAngle = Vector3.Angle(VprevHor, VrefHor);
+        float horizontalAngle = Vector3.SignedAngle(VprevHor, VrefHor, Vector3.up);
 
         //Y angle
         float maxY = Speed / 2;
@@ -235,10 +233,20 @@ public class Fish : MonoBehaviour
             Vref.y = -maxY;
         }
 
-        if (horizontalAngle > 2){
-            Vprev = Quaternion.AngleAxis(horizontalAngle - 2, Vector3.up) * Vprev;
+        float maxAngle = 60 * Time.deltaTime;
+
+        if (horizontalAngle > maxAngle)
+        {
+            Vref = Quaternion.AngleAxis(maxAngle - horizontalAngle, Vector3.up) * Vref;
+        }else if(horizontalAngle < -maxAngle)
+        {
+            //print(horizontalAngle+ " " + Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up));
+            Vref = Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up) * Vref;
+            print(Vref);
         }
-        }
+        VrefHor.x = Vref.x;
+        VrefHor.z = Vref.z;
+    }
 
     public void UpdateFish() {
         currentPosition = transform.position;
@@ -255,7 +263,6 @@ public class Fish : MonoBehaviour
 
         transform.position += Vref * Time.deltaTime*Speed*settings.Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
-        transform.Rotate(0, 90, 0);
         Vprev = Vref;
     }
 
