@@ -230,6 +230,7 @@ public class Fish : MonoBehaviour
         {
             //print(horizontalAngle+ " " + Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up));
             Vref = Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up) * Vref;
+            print(Vref);
         }
         VrefHor.x = Vref.x;
         VrefHor.z = Vref.z;
