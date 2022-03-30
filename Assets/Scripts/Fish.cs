@@ -316,8 +316,7 @@ public class Fish : MonoBehaviour
     public void FeedBehaviour(Vector3 currPos, Vector3 Fpos){
         if(!feeding.isFeeding){
             currentFeedingState = FeedingState.Normal; 
-            fishProbHunger = ProbFeelingHungry2();
-            randTimer = UnityEngine.Random.Range(5f, 30f);
+            if(randTimer<0.0f) randTimer = UnityEngine.Random.Range(5f, 30f);
         }
         if(feeding.isFeeding)
         {
@@ -325,7 +324,7 @@ public class Fish : MonoBehaviour
                 currentFeedingState = FeedingState.Satiated;
             }else if (currentFeedingState!=FeedingState.Satiated && (fishProbHunger*ProbFoodDetection(feeding.anticipateFeeding))>=0.5f){
                 currentFeedingState = FeedingState.Approach;
-            } else if (fishProbHunger>0.5f && randTimer>0.0f)
+            } else if (currentFeedingState!=FeedingState.Satiated && fishProbHunger>0.5f && randTimer>0.0f)
             {   currentFeedingState= FeedingState.Manipulate;
             }
         } 
@@ -335,6 +334,7 @@ public class Fish : MonoBehaviour
             case FeedingState.Normal:
                 break;
             case FeedingState.Satiated:
+                fishProbHunger = ProbFeelingHungry2();
                 break;
             case FeedingState.Approach: //move towards feeding area
                 if(fishProbPelletCapture > 0.5f) currentFeedingState = FeedingState.Manipulate;
