@@ -325,16 +325,16 @@ public class Fish : MonoBehaviour
                     Vso * settings.SocialWeight +
                     calculateVli(currentPosition) * settings.LightWeight * (1 - fishProbHunger) +
                     calculateVTemp(currentPosition) * settings.TempWeight * (1 - fishProbHunger) +
-                    new Vector3(0, VFeeding.y, 0) * settings.FeedingWeight * fishProbHunger +
+                    //new Vector3(0, VFeeding.y, 0) * settings.FeedingWeight * fishProbHunger +
                     calculateVrand(Vprev) * settings.RandWeight
                     );
             float VrefMagnitude = Vnew.magnitude;
 
-            speedCorrection = 1.0f;
-
-            if (VrefMagnitude > 1.0f)
+            speedCorrection = 0.4f;
+            print(VrefMagnitude);
+            if (VrefMagnitude > 0.4f)
             {
-                speedCorrection = 1.0f / VrefMagnitude;
+                speedCorrection = 0.4f / VrefMagnitude;
             }
             if (VrefMagnitude < 0.3f)
             {
@@ -343,6 +343,8 @@ public class Fish : MonoBehaviour
 
             Vnew = Vnew * speedCorrection;
 
+            Vnew = Vnew.normalized;
+
 
             Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) *
                    Vnew;
@@ -350,18 +352,7 @@ public class Fish : MonoBehaviour
 
         float VrefMagnitude2 = Vref.magnitude;
 
-        speedCorrection = 1.0f;
-
-        if (VrefMagnitude2 > 1.0f)
-        {
-            //speedCorrection = 1.0f / VrefMagnitude2;
-            VrefMagnitude2 = 1.0f;
-        }
-        if (VrefMagnitude2 < 0.3f)
-        {
-            //speedCorrection = 0.6f / VrefMagnitude2;
-            VrefMagnitude2 = 0.3f;
-        }
+        
 
         Vref = Vref.normalized;
 
