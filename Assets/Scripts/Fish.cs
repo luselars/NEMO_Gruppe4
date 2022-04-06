@@ -23,6 +23,8 @@ public class Fish : MonoBehaviour
     public Vector3 currentPosition;
     public Vector3 feedingPosition;
 
+    public float speedCorrection = 1.0f;
+
     public Vector3 Vcage = Vector3.zero;
     public Vector3 Vso = Vector3.zero;
     public Vector3 Vref = Vector3.zero;
@@ -206,11 +208,22 @@ public class Fish : MonoBehaviour
         double meanY = Vprev.y;
         double meanZ = Vprev.z;
 
-        MathNet.Numerics.Distributions.Normal normalDistX = new MathNet.Numerics.Distributions.Normal(meanX, stdDev);
-        MathNet.Numerics.Distributions.Normal normalDistY = new MathNet.Numerics.Distributions.Normal(meanY, stdDev);
-        MathNet.Numerics.Distributions.Normal normalDistZ = new MathNet.Numerics.Distributions.Normal(meanZ, stdDev);
+        try
+        {
+            
+        }catch(Exception e)
+        {
+            print(e);
+            return Vrand;
+        }
+            MathNet.Numerics.Distributions.Normal normalDistX = new MathNet.Numerics.Distributions.Normal(meanX, stdDev);
+            MathNet.Numerics.Distributions.Normal normalDistY = new MathNet.Numerics.Distributions.Normal(meanY, stdDev);
+            MathNet.Numerics.Distributions.Normal normalDistZ = new MathNet.Numerics.Distributions.Normal(meanZ, stdDev);
 
-        return Vrand = new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
+            return Vrand = new Vector3((float)normalDistX.Sample(), (float)normalDistY.Sample(), (float)normalDistZ.Sample());
+        
+
+        
     }
 
     private void checkAngle(){
@@ -251,17 +264,18 @@ public class Fish : MonoBehaviour
         {
             //print(horizontalAngle+ " " + Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up));
             Vref = Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up) * Vref;
-            print(Vref);
         }
         VrefHor.x = Vref.x;
         VrefHor.z = Vref.z;
+
+        return;
     }
 
     public void UpdateFish() {
         currentPosition = transform.position;
         FeedBehaviour(currentPosition, feedingPosition);
 
-        if(currentFeedingState==FeedingState.Approach)
+        if(false &&currentFeedingState==FeedingState.Approach && false)
         {
             VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
             Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
@@ -273,7 +287,7 @@ public class Fish : MonoBehaviour
                     );
 
             ProbPelletCapture();
-        } else if(currentFeedingState==FeedingState.Manipulate )
+        } else if(false && currentFeedingState ==FeedingState.Manipulate && false)
         {
             VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
             Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
@@ -290,7 +304,7 @@ public class Fish : MonoBehaviour
             } else{
                 fishProbHunger = ProbFeelingHungry2();
             }
-        } else if (currentFeedingState==FeedingState.Normal || currentFeedingState==FeedingState.Satiated)
+        } else if (false && currentFeedingState ==FeedingState.Normal || currentFeedingState==FeedingState.Satiated )
         {
             VFeeding = (feedingPosition - currentPosition)*Time.deltaTime;
             Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) * 
@@ -302,13 +316,65 @@ public class Fish : MonoBehaviour
                     new Vector3(0, VFeeding.y, 0) * settings.FeedingWeight * fishProbHunger +
                     calculateVrand(Vprev) * settings.RandWeight
                     );
-        }      
-    
+        } else
+        {
+            VFeeding = (feedingPosition - currentPosition) * Time.deltaTime;
+
+            Vector3 Vnew = (
+                    calculateVcage(currentPosition) * settings.CageWeight +
+                    Vso * settings.SocialWeight +
+                    calculateVli(currentPosition) * settings.LightWeight * (1 - fishProbHunger) +
+                    calculateVTemp(currentPosition) * settings.TempWeight * (1 - fishProbHunger) +
+                    new Vector3(0, VFeeding.y, 0) * settings.FeedingWeight * fishProbHunger +
+                    calculateVrand(Vprev) * settings.RandWeight
+                    );
+            float VrefMagnitude = Vnew.magnitude;
+
+            speedCorrection = 1.0f;
+
+            if (VrefMagnitude > 1.0f)
+            {
+                speedCorrection = 1.0f / VrefMagnitude;
+            }
+            if (VrefMagnitude < 0.3f)
+            {
+                speedCorrection = 0.3f / VrefMagnitude;
+            }
+
+            Vnew = Vnew * speedCorrection;
+
+
+            Vref = Vprev * settings.DirectionchangeWeight + (1.0f - settings.DirectionchangeWeight) *
+                   Vnew;
+        }
+
+        float VrefMagnitude2 = Vref.magnitude;
+
+        speedCorrection = 1.0f;
+
+        if (VrefMagnitude2 > 1.0f)
+        {
+            //speedCorrection = 1.0f / VrefMagnitude2;
+            VrefMagnitude2 = 1.0f;
+        }
+        if (VrefMagnitude2 < 0.3f)
+        {
+            //speedCorrection = 0.6f / VrefMagnitude2;
+            VrefMagnitude2 = 0.3f;
+        }
+
         Vref = Vref.normalized;
 
         checkAngle();
 
-        transform.position += Vref * Time.deltaTime*Speed*settings.Speed;
+        // CAP SPEED
+
+        
+
+        Vref = Vref * VrefMagnitude2;
+
+
+        transform.position += Vref * Time.deltaTime*settings.Speed;
         transform.rotation = Quaternion.LookRotation(Vref, Vector3.up);
         Vprev = Vref;
     }
