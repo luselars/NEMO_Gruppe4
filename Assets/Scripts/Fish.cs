@@ -206,6 +206,11 @@ public class Fish : MonoBehaviour
         double meanY = Vprev.y;
         double meanZ = Vprev.z;
 
+        if (meanX < 0.0 || meanX == null) meanX = 0.0;
+        if (meanY < 0.0 || meanY == null) meanY = 0.0;
+        if (meanZ < 0.0 || meanZ == null) meanZ = 0.0;
+
+
         MathNet.Numerics.Distributions.Normal normalDistX = new MathNet.Numerics.Distributions.Normal(meanX, stdDev);
         MathNet.Numerics.Distributions.Normal normalDistY = new MathNet.Numerics.Distributions.Normal(meanY, stdDev);
         MathNet.Numerics.Distributions.Normal normalDistZ = new MathNet.Numerics.Distributions.Normal(meanZ, stdDev);
@@ -223,7 +228,8 @@ public class Fish : MonoBehaviour
 
         //Y angle
         float maxY = Speed / 2;
-        if (Vref.y > maxY) {
+        if (Vref.y > maxY)
+        {
             float diff = Vref.y - maxY;
             float xfrac = Vref.x / (Vref.x + Vref.z);
             float zfrac = 1 - xfrac;
@@ -232,7 +238,8 @@ public class Fish : MonoBehaviour
             Vref.z += diff * zfrac;
             Vref.y = maxY;
         }
-        if (Vref.y < -maxY) {
+        if (Vref.y < -maxY)
+        {
             float diff = Vref.y + maxY;
             float xfrac = Vref.x / (Vref.x + Vref.z);
             float zfrac = 1 - xfrac;
@@ -247,11 +254,12 @@ public class Fish : MonoBehaviour
         if (horizontalAngle > maxAngle)
         {
             Vref = Quaternion.AngleAxis(maxAngle - horizontalAngle, Vector3.up) * Vref;
-        }else if(horizontalAngle < -maxAngle)
+        }
+        else if (horizontalAngle < -maxAngle)
         {
             //print(horizontalAngle+ " " + Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up));
             Vref = Quaternion.AngleAxis(-maxAngle - horizontalAngle, Vector3.up) * Vref;
-            print(Vref);
+            //print(Vref);
         }
         VrefHor.x = Vref.x;
         VrefHor.z = Vref.z;
@@ -299,7 +307,7 @@ public class Fish : MonoBehaviour
                     Vso * settings.SocialWeight +
                     calculateVli(currentPosition) * settings.LightWeight * ( 1 - fishProbHunger )+
                     calculateVTemp(currentPosition) * settings.TempWeight * ( 1 - fishProbHunger ) +
-                    new Vector3(0, VFeeding.y, 0) * settings.FeedingWeight * fishProbHunger +
+                    //new Vector3(0, VFeeding.y, 0) * settings.FeedingWeight * fishProbHunger +
                     calculateVrand(Vprev) * settings.RandWeight
                     );
         }      

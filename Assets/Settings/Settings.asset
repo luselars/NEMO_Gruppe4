@@ -12,29 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2145632a9cb15c249879f9a7d266191f, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  FarmRadius: 10
-  FarmHeight: 10
+  FarmRadius: 20
+  FarmHeight: 20
   PreferredCageDistance: 1
-  SpawnRadius: 17
-  SpawnCount: 2000
+  SpawnRadius: 19
+  SpawnCount: 7000
   Time: 16
   IlluminationLowerbound: 3.4
   IlluminationUpperbound: 76.4
-  maximumOceanTemperature: 16
+  maximumOceanTemperature: 12
   minimumOceanTemperature: 2
   BodyLength: 1
-  Speed: 2
+  Speed: 1.96
   MaxStomachVolume: 120
   FishProgress: 0.5
   PreferredDistance: 0.66
   DetectionDistance: 3
   DirectionchangeWeight: 0.45
   CageWeight: 0.8
-  SocialWeight: 0.45
+  SocialWeight: 0.31
   LightWeight: 0.5
   RandWeight: 0.000000001
-  TempWeight: 0.6
-  FeedingWeight: 0.5
+  TempWeight: 0.7
+  FeedingWeight: 0.4
   PreferredUpperTemperature: 16
   PreferredLowerTemperature: 13
   TempUpperSteep: 80
