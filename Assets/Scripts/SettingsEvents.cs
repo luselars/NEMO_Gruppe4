@@ -4,22 +4,33 @@ using UnityEngine;
 
 public class SettingsEvents : MonoBehaviour
 {
-    public GameObject SettingsPanel;
+    public List<GameObject> ActivePanelList;
+    public GameObject ActivePanel;
     public GameObject CloseButton;
+    public List<GameObject> DeactivePanelList;
     
-    public void OpenPanel()
+    
+
+    public void OpenSettings()
     {
-        if(SettingsPanel != null)
+        foreach(GameObject panel in ActivePanelList)
         {
-            SettingsPanel.SetActive(true);
+            panel.SetActive(true);
         }
+        
     }
 
-    public void ClosePanel()
+    public void ActivatePanel()
     {
-        if(SettingsPanel != null)
+        ActivePanel.SetActive(true);
+        DeactivatePanels();
+    }
+
+    public void DeactivatePanels()
+    {
+        foreach(GameObject panel in DeactivePanelList)
         {
-            SettingsPanel.SetActive(false);
+            panel.SetActive(false);
         }
     }
 }
