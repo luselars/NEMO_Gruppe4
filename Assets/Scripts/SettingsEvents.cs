@@ -8,9 +8,7 @@ public class SettingsEvents : MonoBehaviour
     public GameObject ActivePanel;
     public GameObject CloseButton;
     public List<GameObject> DeactivePanelList;
-    
-    
-
+     
     public void OpenSettings()
     {
         foreach(GameObject panel in ActivePanelList)
